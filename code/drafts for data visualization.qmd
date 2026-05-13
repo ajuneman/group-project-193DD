@@ -281,7 +281,6 @@ ggplot(data = salinity_filtered,
        mapping = aes(x = prcp,
                      y = salinity_ppt)) +
   geom_point() +
-  geom_line() +
   facet_wrap(~ site_full)
   
 
