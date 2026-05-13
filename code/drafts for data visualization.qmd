@@ -201,6 +201,12 @@ salinity_filtered <- water_quality_weather |>
 # 4. Comparing groups Viz
 
 ```{r}
+#| label: boxplot
+
+
+
+
+
 
 ```
 
@@ -214,7 +220,9 @@ ggplot(data = salinity_filtered,
                      y = salinity_ppt)) +
   geom_jitter() +
   stat_summary(fun = mean, geom = "point", size = 3, color = "red") +
-  stat_summary(fun.data = mean_sdl, fun.args = list(mult = 1), geom = "errorbar", width = 0.2, color = "red")
+  stat_summary(fun.data = mean_sdl, fun.args = list(mult = 1), geom = "errorbar", width = 0.2, color = "red") +
+  labs(x = "Site",
+       y = "Salinity")
 
 
 ```
