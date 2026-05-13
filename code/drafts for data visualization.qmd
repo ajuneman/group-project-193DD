@@ -19,11 +19,6 @@ library(janitor)
 # file organization
 library(here)
 
-# plot functions
-library(ggplot2)
-install.packages("ggridges")
-library(ggridges)
-
 ```
 
 ## Data
@@ -229,21 +224,6 @@ ggplot(data = salinity_filtered,
   labs(x = "Site",
        y = "Salinity")
 
-
-```
-
-```{r}
-#| label: ridgeline-viz
-
-ggplot(data = salinity_filtered, 
-       mapping = aes(x = date, 
-                     y = site_full,
-                     fill = salinity_ppt)) + 
-  geom_density_ridges_gradient() + 
-  theme_ridges() + 
-  theme(legend.position = "none") + 
-  labs(x = "Date", 
-       y = "Site")
 
 ```
 
