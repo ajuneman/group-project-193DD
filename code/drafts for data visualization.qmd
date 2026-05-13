@@ -193,11 +193,39 @@ salinity_filtered <- water_quality_weather |>
   # setting the order of the levels (from lowest tp highest avg salinity value)
   # helps the order of the visualizations
   mutate(site_full = fct_relevel(site_full, 
-                                 "Phelps Bridge", "East Channel", "Venoco Bridge"))
+                                 "Phelps Bridge", "East Channel", "Venoco Bridge")) |> 
+  filter(!site_full == "NA")
 
 ```
 
-# 4. Figure Visualizing
+# 4. Comparing groups Viz
+
+```{r}
+
+```
+
+
+
+```{r}
+#| label: strip-chart-std-dev
+
+ggplot(data = salinity_filtered,
+       mapping = aes(x = site_full,
+                     y = salinity_ppt)) +
+  geom_jitter() +
+  stat_summary(fun = mean, geom = "point", size = 3, color = "red") +
+  stat_summary(fun.data = mean_sdl, fun.args = list(mult = 1), geom = "errorbar", width = 0.2, color = "red")
+
+
+```
+
+
+
+
+
+
+# 5. Figure Visualizing
+
 
 ## Figure 1
 
