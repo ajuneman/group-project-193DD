@@ -198,7 +198,15 @@ salinity_filtered <- water_quality_weather |>
 
 ```
 
-# 4. Comparing groups Viz
+
+# 4. Summarizing
+
+
+
+
+
+
+# 5. Comparing groups Viz
 
 ```{r}
 #| label: boxplot
@@ -232,7 +240,7 @@ ggplot(data = salinity_filtered,
 
 
 
-# 5. Figure Visualizing
+# 6. Figure Visualizing
 
 
 ## Figure 1
