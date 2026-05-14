@@ -292,29 +292,6 @@ exploratory_salinity <- water_quality_weather |>
 
 ```
 
-## Temperature 
-```{r}
-
-monthly_temp <- water_quality_weather |> 
-  filter(elevation_code %in% c("0", "1", "2")) |> 
-  filter(!site_name == "other") |> 
-  distinct(month, year, wy, .keep_all = TRUE) |> 
-  group_by(month, year) |> 
-  summarise(avg_temp = mean(temperature_c, na.rm = TRUE)) |> 
-  ungroup() |> 
-  mutate(avg_temp_f = (avg_temp*9/5) + 32) |> 
-  mutate(date = lubridate::make_date(.data$year, .data$month, 1)) |> 
-  mutate(month = factor(month,
-                        levels = 1:12,
-                        labels = c("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"),
-                        ordered = TRUE))
-
-temp_viz <- monthly_temp |> 
-  left_join(exploratory_salinity,  by = c("month", "year"))
-
-
-
-```
 
 ## Water Surface Elevation
 ```{r}
