@@ -179,8 +179,7 @@ water_quality_weather <- left_join(
   # right data frame
   y = weather_clean,
   # joining these dfs by their date column
-  by = "date"
-)
+  by = "date")
 ```
 
 # 3. Wrangling 
@@ -376,6 +375,51 @@ ggplot(salinity_prcp, aes(x = mean_salinity, y = site_full, fill = site_full)) +
        y = "Site",
        title= "Salinity Observation Distribution Across NCOS Sites")
  
+
+```
+
+
+## Histograms
+
+### # of Observations per Site
+```{r}
+#| label: observation-per-site
+
+ggplot(data = water_quality_weather |> 
+         filter(!global_id %in% salinity_outlier_ids,
+                site_name != "other",
+                elevation_code %in% c("0", "1", "2")) |> 
+         mutate(site_full = fct_relevel(site_full,
+                                        "Phelps Bridge", "East Channel", "Venoco Bridge")),
+       mapping = aes(x = site_full)) +
+  scale_fill_manual(values = natparks.pals("Volcanoes")) +
+  geom_bar(aes(fill = site_full)) +
+  theme_bw() +
+  theme(legend.position = "none") +
+  labs(x = "Site",
+       y = "Number of Observations",
+       title = "Number of Observations at Each Site")
+
+```
+
+### # of Observations per Elevation Code
+```{r}
+#| label: observation-per-code
+
+ggplot(data = water_quality_weather |> 
+         filter(!global_id %in% salinity_outlier_ids,
+                site_name != "other",
+                elevation_code %in% c("0", "1", "2")),
+       mapping = aes(x = elevation_code)) +
+  geom_bar(aes(fill = elevation_code)) +
+  scale_fill_manual(values = natparks.pals("Banff")) +
+  theme_bw() +
+  theme(legend.position = "none") +
+  labs(x = "Elevation Code",
+       y = "Number of Observations",
+       title = "Observation Count Across Elevation Codes")
+
+
 
 ```
 
