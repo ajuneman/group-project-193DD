@@ -19,6 +19,20 @@ library(janitor)
 # file organization
 library(here)
 
+# Boxplot Visualization
+#install.packages("hrbrthemes")
+library(hrbrthemes)
+#install.packages("viridis")
+library(viridis)
+
+# Ridgeline Plot
+#install.packages("ggridges")
+library(ggridges)
+#install.packages("ggplot2")
+library(ggplot2)
+
+# Color Palette
+library(NatParksPalettes)
 ```
 
 ## Data
@@ -182,7 +196,25 @@ salinity_outlier_ids <- water_quality_weather |>
 
 ```
 
-## Filtering Salinity
+## Get precipitation per month (site independent variable)
+```{r}
+#| label: prcp-monthly
+
+monthly_prcp <- water_quality_weather |> 
+  filter(elevation_code %in% c("0", "1", "2")) |> 
+  filter(!site_name == "other") |> 
+  distinct(month, year, wy, .keep_all = TRUE) |> 
+  group_by(month, wy) |> 
+  summarise(sum_prcp = sum(prcp, na.rm = TRUE)) |> 
+  ungroup() |> 
+  mutate(date = lubridate::make_date(.data$wy, .data$month, 1))
+
+
+```
+
+
+
+## Filtering Salinity & Summarizing Variables
 ```{r}
 #| label: salinity-filtered
 
@@ -196,67 +228,97 @@ salinity_filtered <- water_quality_weather |>
   # helps the order of the visualizations
   mutate(site_full = fct_relevel(site_full, 
                                  "Phelps Bridge", "East Channel", "Venoco Bridge")) |> 
-  filter(!site_full == "NA")
+  # taking out sites w/ NA
+  filter(!site_full == "NA") |>
+  # keeping only columns of interest (to reduce confusion)
+  select(site_full, water_surface_elevation, elevation_code, salinity_ppt, temperature_c, month, year, wy) |> 
+  # group by site full and month
+  group_by(site_full, month, wy) |> 
+  # calculate mean salinity (per month), and sum of precipitation (per month)
+  summarize(mean_salinity = mean(salinity_ppt, na.rm = TRUE),
+            .groups = "drop")
+
+
 
 ```
 
+## Joining Monthly Precipitation (sum) w/ Monthly Salinity (avg.)
 
-# 4. Summarizing
 ```{r}
+#| label: joining-prcp
 
-# start with filtered data frame
-salinity_filtered |> 
-  # group by site & month
-  group_by(site_full, month) |> 
-  # calculate mean salinity
-  summarize(mean_salinity = mean(salinity_ppt, na.rm = TRUE)) |> 
-  # ungroup data frame
-  ungroup()
- 
-salinity_filtered |> 
-  group_by(prcp, month) |> 
-  summarize(sum_prcp = sum(prcp, na.rm = TRUE)) |> 
-  ungroup()
+salinity_prcp <- salinity_filtered |> 
+  left_join(monthly_prcp, by = c("month", "wy")) |> 
+  mutate(month = factor(month,
+                        levels = 1:12,
+                        labels = c("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"),
+                        ordered = TRUE))
 
 
 ```
 
 
 
+# 4. Comparing groups Viz
 
-
-
-# 5. Comparing groups Viz
-
+## Boxplot w/ Jitter
 ```{r}
 #| label: boxplot
 
-
-
-
+# Plot
+salinity_prcp %>%
+  ggplot( aes(x= site_full, y=mean_salinity, fill = site_full)) +
+    geom_boxplot() +
+    scale_fill_viridis(discrete = TRUE, alpha=0.6) +
+    geom_jitter(color="black", size=0.4, alpha=0.9) +
+    theme_ipsum() +
+    theme(
+      legend.position="none",
+      plot.title = element_text(size=11)
+    ) +
+    ggtitle("Distribution of Mean Salinity Values Across Sites") +
+    xlab("Site") + 
+  ylab("Mean Salinity (ppt)")
 
 
 ```
 
 
-
+## Strip Chart w/ Standard Deviation
 ```{r}
 #| label: strip-chart-std-dev
 
-ggplot(data = salinity_filtered,
+ggplot(data = salinity_prcp,
        mapping = aes(x = site_full,
-                     y = salinity_ppt)) +
+                     y = mean_salinity)) +
   geom_jitter() +
-  stat_summary(fun = mean, geom = "point", size = 3, color = "red") +
-  stat_summary(fun.data = mean_sdl, fun.args = list(mult = 1), geom = "errorbar", width = 0.2, color = "red") +
+  stat_summary(fun = mean, geom = "point", size = 3, color = "turquoise") +
+  stat_summary(fun.data = mean_sdl, fun.args = list(mult = 1), geom = "errorbar", width = 0.2, color = "turquoise") +
   labs(x = "Site",
-       y = "Salinity")
+       y = "Mean Salinity (ppt)")
 
 
 ```
 
+## Ridgeline Plot
+```{r}
+#| label: ridgeline
 
-# 6. Figure Visualizing
+ggplot(salinity_prcp, aes(x = mean_salinity, y = site_full, fill = site_full)) +
+  geom_density_ridges() +
+  theme_ridges() + 
+  theme(legend.position = "none") +
+  scale_fill_manual(values = natparks.pals("Banff")) +
+  labs(x = "Salinity (ppt)",
+       y = "Site",
+       title= "Salinity Observation Distribution Across NCOS Sites")
+ 
+
+```
+
+
+
+# 5. Figure Visualizing
 
 
 ## Figure 1
@@ -264,16 +326,22 @@ ggplot(data = salinity_filtered,
 ```{r}
 #| label: viz1
 
-ggplot(data = salinity_filtered,
+ggplot(data = salinity_prcp,
        mapping = aes(x = date,
-                     y = prcp)) +
+                     y = sum_prcp)) +
   geom_point() +
-  geom_line()
+  geom_line() +
+  theme_bw() +
+  scale_x_date(date_breaks = "6 months", date_labels = "%b %Y") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  labs(x = "Date",
+       y = "Monthly Precipitation",
+       title = "Monthly Precipitation (2020-2025)")
 
 ```
 
 
-## Figure 2.
+## Figure 2. - Not finished
 ```{r}
 #| label: viz2
 
@@ -285,19 +353,19 @@ ggplot(data = salinity_filtered,
 
 ```
 
-## Figure 3.
+## Figure 3. - Not finished
 ```{r}
 #| label: viz3
 
 ggplot(data = salinity_filtered,
-       mapping = aes(x = salinity_ppt,
+       mapping = aes(x = mean_salinity,
                      y = elevation_code)) +
   geom_col()
 
 
 ```
 
-## Figure 4.
+## Figure 4. - Not finished
 ```{r}
 #| label: viz4
 
