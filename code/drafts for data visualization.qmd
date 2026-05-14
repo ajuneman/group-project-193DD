@@ -200,14 +200,23 @@ salinity_outlier_ids <- water_quality_weather |>
 ```{r}
 #| label: prcp-monthly
 
+# create new object from `water_quality_weather`
 monthly_prcp <- water_quality_weather |> 
+  # only include elevation codes 0, 1, and 2
   filter(elevation_code %in% c("0", "1", "2")) |> 
+  # get rid of site names w/ "other"
   filter(!site_name == "other") |> 
+  # removing any duplicate rows based on the combination of month, year, and wy
   distinct(month, year, wy, .keep_all = TRUE) |> 
+  # grouping by month and year
   group_by(month, year) |> 
+  # calculating the sum of prcp per month (not per site as it is a weather event and not site specific)
   summarise(sum_prcp = sum(prcp, na.rm = TRUE)) |> 
+  # ungrouping
   ungroup() |> 
+  # creating a date column to be read as a date
   mutate(date = lubridate::make_date(.data$year, .data$month, 1)) |> 
+  # creating levels to `month`, putting them in a logical order
   mutate(month = factor(month,
                         levels = 1:12,
                         labels = c("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"),
@@ -223,10 +232,13 @@ monthly_prcp <- water_quality_weather |>
 #| label: salinity-filtered
 
 salinity_filtered <- water_quality_weather |> 
+  # keeping only elevation codes 0, 1, and 2
   filter(elevation_code %in% c("0", "1", "2")) |> 
   # filtering the column global_id to exclude the values that match those in `salinity_outlier_ids`
   filter(!global_id %in% salinity_outlier_ids) |> 
+  # dropping the column for other_site_names
   select(!other_site_name) |> 
+  # get rid of site names w/ "other"
   filter(!site_name == "other") |> 
   # setting the order of the levels (from lowest tp highest avg salinity value)
   # helps the order of the visualizations
@@ -236,13 +248,14 @@ salinity_filtered <- water_quality_weather |>
   filter(!site_full == "NA") |>
   # keeping only columns of interest (to reduce confusion)
   select(site_full, water_surface_elevation, elevation_code, salinity_ppt, temperature_c, month, year, wy) |> 
+  # creating levels to `month`, putting them in a logical order
   mutate(month = factor(month,
                         levels = 1:12,
                         labels = c("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"),
                         ordered = TRUE)) |> 
-  # group by site full and month
+  # group by site full, month, and year
   group_by(site_full, month, year) |> 
-  # calculate mean salinity (per month), and sum of precipitation (per month)
+  # calculate mean salinity (per site per month))
   summarize(mean_salinity = mean(salinity_ppt, na.rm = TRUE),
             .groups = "drop")
 
@@ -265,11 +278,15 @@ salinity_prcp <- salinity_filtered |>
 ```{r}
 #| label: exploratory-viz
 
+# create new object `exploratory_salinity` from `water_quality_weather`
 exploratory_salinity <- water_quality_weather |> 
+  # only keep elevation codes 0, 1, 2, and 3 (keeping three just for visualization)
   filter(elevation_code %in% c("0", "1", "2", "3")) |> 
   # filtering the column global_id to exclude the values that match those in `salinity_outlier_ids`
   filter(!global_id %in% salinity_outlier_ids) |> 
+  # dropping the column `other_site_names`
   select(!other_site_name) |> 
+  # filterign out site names that match "other"
   filter(!site_name == "other") |> 
   # setting the order of the levels (from lowest tp highest avg salinity value)
   # helps the order of the visualizations
@@ -279,10 +296,12 @@ exploratory_salinity <- water_quality_weather |>
   filter(!site_full == "NA") |>
   # keeping only columns of interest (to reduce confusion)
   select(site_full, water_surface_elevation, elevation_code, salinity_ppt, temperature_c, month, year) |>
+  # group by site, elevation code, month, and year
   group_by(site_full, elevation_code, month, year) |> 
-  # calculate mean salinity (per month), and sum of precipitation (per month)
+  # calculate mean salinity
   summarize(mean_salinity = mean(salinity_ppt, na.rm = TRUE),
             .groups = "drop") |> 
+  # creating levels to `month`, putting them in a logical order
   mutate(month = factor(month,
                         levels = 1:12,
                         labels = c("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"),
@@ -296,21 +315,31 @@ exploratory_salinity <- water_quality_weather |>
 ```{r}
 #| label: elevation-viz
 
+# create a new object `monthly_surface_elv` from `water_quality_weather`
 monthly_surfcae_elv <- water_quality_weather |> 
+  # only include elevation codes 0, 1, and 2
   filter(elevation_code %in% c("0", "1", "2")) |> 
+  # Filter out site names matchign to "other"
   filter(!site_name == "other") |>  
+  # group by site, month, and year
   group_by(site_full, month, year) |> 
+  # calculate mean water surface elevation
   summarise(avg_elv = mean(water_surface_elevation, na.rm = TRUE)) |> 
+  # ungroup data frame
   ungroup() |> 
+  # create a date column to be read as a date
   mutate(date = lubridate::make_date(.data$year, .data$month, 1)) |> 
+  # creating levels to `month`, putting them in a logical order
   mutate(month = factor(month,
                         levels = 1:12,
                         labels = c("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"),
                         ordered = TRUE))
 
+## Joining data frames 
 elv_viz <- monthly_surfcae_elv |> 
+  # joining by columns month, year, and site
   left_join(salinity_prcp,  by = c("month", "year", "site_full")) |> 
-  mutate(log_prcp = log(sum_prcp +1)) |> 
+  # filtering out all NA average elevation values
   filter(!avg_elv == "NaN")
 
 
@@ -379,7 +408,7 @@ ggplot(salinity_prcp, aes(x = mean_salinity, y = site_full, fill = site_full)) +
 ```
 
 
-## Histograms
+## Bar Graphs (Distribution of Observations)
 
 ### # of Observations per Site
 ```{r}
