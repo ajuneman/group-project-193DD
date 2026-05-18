@@ -458,7 +458,7 @@ ggplot(data = water_quality_weather |>
 ### # Precipitation Peak
 ```{r}
 precipitation_peaks <- salinity_prcp |>
-  filter(date == "2024-01-01")
+  filter(date == "2024-01-01") |> 
   ungroup()
 ```
 
