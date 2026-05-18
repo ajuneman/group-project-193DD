@@ -493,18 +493,108 @@ ggplot(data = salinity_prcp,
 ## Figure 1b. 
 
 ```{r}
+#| label: salinity-time-series
 
-sitesalinity_directlabel <- ggplot(data = ,
+sitesalinity_directlabel <- ggplot(data = salinity_prcp,
                                 # x-axis: survey date
                                 # y-axis: total counts
-                                mapping = aes(x = observation_date,
+                                mapping = aes(x = mean_salinity,
                                               y = total,
-                                              color = species)) +
+                                              color = site_full)) +
   # basic geometries -----
   # points to represent counts at each survey
   geom_point() +
   # lines to connect points
-  geom_line() 
+  geom_line() + 
+  scale_x_date(
+    expand = expansion(mult = c(0.3, 0.1)),
+    limits = c(as_date("2025-11-01"), NA),
+    breaks = as_date(c())
+  )
+
+
+
+
+
+
+scale_x_date(
+    # expanding axis
+    expand = expansion(mult = c(0.3, 0.1)),
+    # setting limits (no upper bound)
+    limits = c(as_date("2024-10-01"), NA),
+    # setting breaks so that date labels appear every month
+    breaks = as_date(c("2024-10-01", "2024-11-01", "2024-12-01",
+                       "2025-01-01", "2025-02-01", "2025-03-01",
+                       "2025-04-01", "2025-05-01", "2025-06-01",
+                       "2025-07-01", "2025-08-01", "2025-09-01")),
+    # label dates with month abbreviations
+    date_labels = "%b") +
+  # set y-axis expansion
+  scale_y_continuous(expand = expansion(mult = c(0.01, 0.1))) +
+  
+  # species text labels -----
+  geom_text_repel(
+    # new aesthetics for label text
+    mapping = aes(label = species_label),
+    # setting random seed 
+    # (play around with this number until you get an arrangement you like)
+    seed = 100,
+    # right align labels
+    hjust = 1,
+    # repel in y direction only
+    direction = "y",
+    # linetype
+    segment.linetype = 3,
+    # text
+    size = 5,
+    # nudge starting point of label to the left along x-axis and up along y-axis
+    nudge_x = -1,
+    nudge_y = 1,
+    # lengthen line length
+    segment.size = 0.5,
+    # amount of repulsion between text labels
+    force = 0.5,
+    # set the x-axis position for where the labels should start
+    xlim  = as_date("2024-10-01"),
+    # remove text from the plot legend
+    show.legend = FALSE) +
+  
+  # vertical lines for annotations -----
+  # add vertical line for major rain event in January
+  geom_vline(xintercept = as_date("2025-01-26"),
+             linetype = "dashed") +
+  # text label (from cowplot package)
+  draw_label("First major rain event\n(3.40 in)",
+             # x- and y-axis position
+             x = as_date("2025-01-20"),   
+             y = 85,
+             # right alignment
+             hjust = 1,
+             # text size
+             size = 14) +
+  # add vertical line for major rain event in March
+  geom_vline(xintercept = as_date("2025-03-12"),
+             linetype = "dashed") +
+  # text label
+  draw_label("Last major rain event\n(1.11 in)",
+             # x- and y-axis position
+             x = as_date("2025-03-17"),   
+             y = 85,
+             # left alignment
+             hjust = 0,
+             # text size
+             size = 14) +
+  
+  # other plot appearance customization -----
+  # set custom colors
+  scale_color_manual(values = colors) +
+  # relabelling x- and y-axes
+  labs(x = "Date",
+       y = "Total counts") +
+  # theme adjustments
+  theme(legend.position = "none",
+        panel.grid = element_blank(),
+        legend.background = element_blank())
 
 
 
