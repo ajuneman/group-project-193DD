@@ -34,6 +34,9 @@ library(ggplot2)
 # Color Palette
 library(NatParksPalettes)
 library(wesanderson)
+
+# Use ragg_png device for better font rendering and system font support
+knitr::opts_chunk$set(dev = "ragg_png")
 ```
 
 ## Data
@@ -501,7 +504,7 @@ sitesalinity_directlabel <- ggplot(data = ,
   # points to represent counts at each survey
   geom_point() +
   # lines to connect points
-  geom_line() +
+  geom_line() 
 
 
 
