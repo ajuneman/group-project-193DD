@@ -487,6 +487,28 @@ ggplot(data = salinity_prcp,
 
 ```
 
+## Figure 1b. 
+
+```{r}
+
+sitesalinity_directlabel <- ggplot(data = ,
+                                # x-axis: survey date
+                                # y-axis: total counts
+                                mapping = aes(x = observation_date,
+                                              y = total,
+                                              color = species)) +
+  # basic geometries -----
+  # points to represent counts at each survey
+  geom_point() +
+  # lines to connect points
+  geom_line() +
+
+
+
+
+```
+
+
 
 ## Figure 2. - How Salinity Relates to Water Surface Elevation (Venoco Bridge)
 ```{r}
