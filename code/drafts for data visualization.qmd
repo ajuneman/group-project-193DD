@@ -452,6 +452,14 @@ ggplot(data = water_quality_weather |>
 
 ```
 
+### # Precipitation Peak
+```{r}
+precipitation_peaks <- salinity_prcp |>
+  group_by(year) |>
+  slice_max(sum_prcp, n = 1, with_ties = FALSE) |>
+  ungroup()
+```
+
 
 # 5. Figure Visualizing
 
@@ -471,7 +479,11 @@ ggplot(data = salinity_prcp,
   theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
   labs(x = "Date",
        y = "Total Monthly Precipitation",
-       title = "Total Monthly Precipitation at NCOS")
+       title = "Total Monthly Precipitation at NCOS") + geom_vline(data = precipitation_peaks,
+             aes(xintercept = date,
+                 color = sum_prcp),
+             linetype = "dotted",
+             linewidth = 1) 
 
 ```
 
