@@ -515,7 +515,7 @@ sitesalinity_directlabel <- ggplot(data = salinity_prcp,
 
 
 
-
+```
 scale_x_date(
     # expanding axis
     expand = expansion(mult = c(0.3, 0.1)),
