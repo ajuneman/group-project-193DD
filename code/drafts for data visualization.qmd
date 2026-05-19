@@ -458,162 +458,142 @@ ggplot(data = water_quality_weather |>
 
 ```
 
-### # Precipitation Peak
+### # Precipitation Peaks
 ```{r}
+
+# creating a new object `precipitation_peaks` from `salinity_prcp`
 precipitation_peaks <- salinity_prcp |>
-  filter(date == "2024-01-01") |> 
-  ungroup()
+  # including the dates of the top 4 monthly precipitation
+  filter(date %in% c("2021-01-01", "2023-03-01", "2023-02-01", "2021-10-01")) |> 
+  # ungrouping data frame
+  ungroup() |> 
+  # keeping these 4 distinct dates
+  distinct(date, .keep_all = TRUE) |>
+  # adding a label to each event
+  mutate(label = c("Rain Event (5.19 in)", "Rain Event (2.06 in)", "Rain Event (1.80 in)", "Rain Event (1.15 in)"),
+         # setting the y position for each event (dropping the 1.80 event lower for better visualization)
+         label_y = c(4.5, 4.5, 3.5, 4.5))
+
+
+
 ```
 
 
 # 5. Figure Visualizing
 
 
-## Figure 1. - Total Monthly Precipitation at NCOS
+## Figure 1a. - Monthly Precipitation at NCOS (Time Series w/ Rain Event Lines)
 
 ```{r}
 #| label: viz1
+#| fig-height: 6
+#| fig-width: 8
 
+# base layer: ggplot
+# data: salinity_prcp
 ggplot(data = salinity_prcp,
+       # x axis: date
        mapping = aes(x = date,
+                     # y axis: monthly precipitation sum
                      y = sum_prcp)) +
-  geom_point(color = "darkblue") +
-  geom_line(color = "darkblue") +
+  # prcp displayed by columns (a suggestion made by An after work plan/proposal edits)
+  geom_col(color = "darkblue") +
+  # adding themeing 
   theme_bw() +
+  # x-axis breaks every 6 months (to reduce cognitive load)
+  # Format date axis labels as abbreviated month and full year
   scale_x_date(date_breaks = "6 months", date_labels = "%b %Y") +
+  # angling labels to 45 degrees and to be right-aligned
   theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  # expanding limits to make room for text
+  scale_y_continuous(limits = c(0, 6)) + 
+  # labeling x and y axes
   labs(x = "Date",
        y = "Total Monthly Precipitation",
-       title = "Total Monthly Precipitation at NCOS") + geom_vline(data = precipitation_peaks,
+       # adding title
+       title = "Total Monthly Precipitation at NCOS") + 
+  # removing legend, redundant
+  theme(legend.position = "none") +
+  # adding in lines for prcp events
+  geom_vline(data = precipitation_peaks,
+             # centering them on dates
              aes(xintercept = date,
-                 color = sum_prcp),
+                 # coloring them by their established label
+                 color = label),
+             # signified by dotted lines
              linetype = "dotted",
-             linewidth = 1) 
+             # width of lines
+             linewidth = 1.25) +
+  # adding custom color palette
+  scale_color_manual(values = wes_palette("AsteroidCity1")) +
+  # adding labels to each dotted line from the `precipitation_peaks` object
+  geom_text(data = precipitation_peaks,
+            # x-axis location: date
+            # y-axis location: set y value from earlier chunk
+            # label = the defined label from earlier chunk
+            # colro by label
+            aes(x = date, y = label_y, label = label, color = label),
+            # 45 degree angle for readability
+            angle = 45,
+            # slightly to right of vertical dotted line
+            hjust = -0.1,
+            # text sixe
+            size = 3,
+            # text bolding
+            fontface = "bold")
+ 
 
 ```
 
-## Figure 1b. 
+## Figure 1b. Salinity Time Series w/ Prcp Highlights
 
 ```{r}
-#| label: salinity-time-series
-
-sitesalinity_directlabel <- ggplot(data = salinity_prcp,
-                                # x-axis: survey date
-                                # y-axis: total counts
-                                mapping = aes(x = mean_salinity,
-                                              y = total,
-                                              color = site_full)) +
-  # basic geometries -----
-  # points to represent counts at each survey
-  geom_point() +
-  # lines to connect points
-  geom_line() + 
-  scale_x_date(date_breaks = "6 months", date_labels = "%b %Y") +
-  geom_text_repel(
-    mapping = aes(label = site_full),
-    seed = 100,
-    hjust = 1,
-    direction = "y",
-    segment.linetype = 3,
-    size = 5,
-    nudge_x = -1,
-    nudge_y = 1,
-    segment.size = 0.5,
-    force = 0.5,
-    xlim  = as_date("2021-01-01"),
-    show.legend = FALSE) +
-  geom_vline(xintercept = as_date("2024-01-01"),
-             linetype = "dashed") +
-  draw_label("Major rain event\n(3.40 in)",
-  
+#| label: salinity-w-rain-events
+#| fig-height: 6
+#| fig-width: 8
 
 
-
-
+# base layer ggplot
+# data: salinity_prcp
+ggplot(data = salinity_prcp,
+       # x-axis: date
+       mapping = aes(x = date,
+                     # y-axis: mean_salinity
+                     y = mean_salinity)) +
+  # column displaying mean salinity
+  geom_col(color = "grey") +
+  # separating points from sites into different plots
+  facet_wrap(~ site_full) +
+  # adding themeing
+  theme_bw() +
+  # x breaks by year to reduce cognitive load, labeling by abbreviated month and full year
+  scale_x_date(date_breaks = "12 months", date_labels = "%b %Y") +
+  # angling x axis labels to 45 degrees and to be right-aligned
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) + 
+  # labeling x and y axes
+  labs(x = "Date",
+       y = "Monthly Average Salinity (ppt)",
+       # adding title
+       title = "Monthly Average NCOS Salinity",
+       # adding legend title
+       color = "Precipitation Events") +
+  # adding lines from the `precipitation_peaks_facet` object
+  geom_vline(data = precipitation_peaks_facet,
+             # oriented on the date
+             aes(xintercept = date,
+                 # different colors by label
+                 color = label),
+             # long dash for better viz
+             linetype = "longdash",
+             # line width
+             linewidth = 0.75) +
+  # custom colors
+  scale_color_manual(values = wes_palette("AsteroidCity1")) +
+  # legend at bottom for less visual clutter
+  theme(legend.position = "bottom")
+ 
 
 ```
-scale_x_date(
-    # expanding axis
-    expand = expansion(mult = c(0.3, 0.1)),
-    # setting limits (no upper bound)
-    limits = c(as_date("2024-10-01"), NA),
-    # setting breaks so that date labels appear every month
-    breaks = as_date(c("2024-10-01", "2024-11-01", "2024-12-01",
-                       "2025-01-01", "2025-02-01", "2025-03-01",
-                       "2025-04-01", "2025-05-01", "2025-06-01",
-                       "2025-07-01", "2025-08-01", "2025-09-01")),
-    # label dates with month abbreviations
-    date_labels = "%b") +
-  # set y-axis expansion
-  scale_y_continuous(expand = expansion(mult = c(0.01, 0.1))) +
-  
-  # species text labels -----
-  geom_text_repel(
-    # new aesthetics for label text
-    mapping = aes(label = species_label),
-    # setting random seed 
-    # (play around with this number until you get an arrangement you like)
-    seed = 100,
-    # right align labels
-    hjust = 1,
-    # repel in y direction only
-    direction = "y",
-    # linetype
-    segment.linetype = 3,
-    # text
-    size = 5,
-    # nudge starting point of label to the left along x-axis and up along y-axis
-    nudge_x = -1,
-    nudge_y = 1,
-    # lengthen line length
-    segment.size = 0.5,
-    # amount of repulsion between text labels
-    force = 0.5,
-    # set the x-axis position for where the labels should start
-    xlim  = as_date("2024-10-01"),
-    # remove text from the plot legend
-    show.legend = FALSE) +
-  
-  # vertical lines for annotations -----
-  # add vertical line for major rain event in January
-  geom_vline(xintercept = as_date("2025-01-26"),
-             linetype = "dashed") +
-  # text label (from cowplot package)
-  draw_label("First major rain event\n(3.40 in)",
-             # x- and y-axis position
-             x = as_date("2025-01-20"),   
-             y = 85,
-             # right alignment
-             hjust = 1,
-             # text size
-             size = 14) +
-  # add vertical line for major rain event in March
-  geom_vline(xintercept = as_date("2025-03-12"),
-             linetype = "dashed") +
-  # text label
-  draw_label("Last major rain event\n(1.11 in)",
-             # x- and y-axis position
-             x = as_date("2025-03-17"),   
-             y = 85,
-             # left alignment
-             hjust = 0,
-             # text size
-             size = 14) +
-  
-  # other plot appearance customization -----
-  # set custom colors
-  scale_color_manual(values = colors) +
-  # relabelling x- and y-axes
-  labs(x = "Date",
-       y = "Total counts") +
-  # theme adjustments
-  theme(legend.position = "none",
-        panel.grid = element_blank(),
-        legend.background = element_blank())
-
-
-
-
 
 
 
