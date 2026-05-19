@@ -357,12 +357,15 @@ elv_viz <- monthly_surfcae_elv |>
 
 # 4. Distribution Visualizations, Comparing Groups
 
+
+
 ## Boxplot w/ Jitter - Distribution of Mean Salinity Values Across Sites
+### Comment from An from revisions
 ```{r}
 #| label: boxplot
 
 # Plot
-salinity_prcp %>%
+salinity_prcp |> 
   ggplot( aes(x= site_full, y=mean_salinity, fill = site_full)) +
     geom_boxplot(color = "brown") +
     scale_fill_viridis(discrete = TRUE, alpha=0.6) +
@@ -661,9 +664,40 @@ ggplot(data = salinity_prcp,
        y = "Monthly Average Salinity (ppt)",
        title = "Figure 4. How Precipitation Explains Salinity",
        color = "Site")
-  
-
 
 ```
+
+
+# Spearman's Correlation
+
+## Calculating Spearman's Correlation
+```{r}
+
+cor.test(salinity_prcp$mean_salinity, 
+         salinity_prcp$sum_prcp, 
+         method = "spearman")
+
+```
+
+## Results
+
+Spearman's rank correlation rho
+
+data:  salinity_prcp$mean_salinity and salinity_prcp$sum_prcp
+S = 939961, p-value = 0.8251
+alternative hypothesis: true rho is not equal to 0
+sample estimates:
+       rho 
+0.01663311
+
+## Interpreting the Results
+
+
+
+
+
+
+
+
 
 
