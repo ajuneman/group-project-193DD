@@ -20,10 +20,13 @@ library(janitor)
 library(here)
 
 # Boxplot Visualization
-#install.packages("hrbrthemes")
+
 library(hrbrthemes)
-#install.packages("viridis")
+
 library(viridis)
+
+# text label instead of legend
+library(cowplot)
 
 # Ridgeline Plot
 #install.packages("ggridges")
@@ -208,9 +211,9 @@ monthly_prcp <- water_quality_weather |>
   # only include elevation codes 0, 1, and 2
   filter(elevation_code %in% c("0", "1", "2")) |> 
   # get rid of site names w/ "other"
-  filter(!site_name == "other") |> 
+  filter(!site_full == "NA") |> 
   # removing any duplicate rows based on the combination of month, year, and wy
-  distinct(month, year, wy, .keep_all = TRUE) |> 
+  distinct(month, year, prcp) |> 
   # grouping by month and year
   group_by(month, year) |> 
   # calculating the sum of prcp per month (not per site as it is a weather event and not site specific)
@@ -505,11 +508,24 @@ sitesalinity_directlabel <- ggplot(data = salinity_prcp,
   geom_point() +
   # lines to connect points
   geom_line() + 
-  scale_x_date(
-    expand = expansion(mult = c(0.3, 0.1)),
-    limits = c(as_date("2025-11-01"), NA),
-    breaks = as_date(c())
-  )
+  scale_x_date(date_breaks = "6 months", date_labels = "%b %Y") +
+  geom_text_repel(
+    mapping = aes(label = site_full),
+    seed = 100,
+    hjust = 1,
+    direction = "y",
+    segment.linetype = 3,
+    size = 5,
+    nudge_x = -1,
+    nudge_y = 1,
+    segment.size = 0.5,
+    force = 0.5,
+    xlim  = as_date("2021-01-01"),
+    show.legend = FALSE) +
+  geom_vline(xintercept = as_date("2024-01-01"),
+             linetype = "dashed") +
+  draw_label("Major rain event\n(3.40 in)",
+  
 
 
 
@@ -598,7 +614,7 @@ scale_x_date(
 
 
 
-```
+
 
 
 
@@ -617,7 +633,8 @@ ggplot(data = elv_viz,
   theme_bw() +
   labs(x = "Monthly Average Water Surface Elevation (m)",
        y = "Monthly Average Salinity (ppt)",
-       title = "Figure 2. How Salinity Relates to Water Surface Elevation (Venoco Bridge")
+       title = "Figure 2. How Salinity Relates to Water Surface Elevation (Venoco Bridge)") 
+
 
 ```
 
