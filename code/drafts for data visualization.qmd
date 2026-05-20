@@ -363,6 +363,8 @@ elv_viz <- monthly_surfcae_elv |>
 ### Comment from An from revisions
 ```{r}
 #| label: boxplot
+#| fig-height: 6
+#| fig-width: 8
 
 # Plot
 salinity_prcp |> 
@@ -386,6 +388,8 @@ salinity_prcp |>
 ## Strip Chart w/ Standard Deviation - How Mean Salinity Differs Between Sites
 ```{r}
 #| label: strip-chart-std-dev
+#| fig-height: 6
+#| fig-width: 8
 
 ggplot(data = salinity_prcp,
        mapping = aes(x = site_full,
@@ -403,6 +407,8 @@ ggplot(data = salinity_prcp,
 ## Ridgeline Plot - Salinity Observation Distribution Across NCOS Sites
 ```{r}
 #| label: ridgeline
+#| fig-height: 6
+#| fig-width: 8
 
 ggplot(salinity_prcp, aes(x = mean_salinity, y = site_full, fill = site_full)) +
   geom_density_ridges() +
@@ -422,6 +428,8 @@ ggplot(salinity_prcp, aes(x = mean_salinity, y = site_full, fill = site_full)) +
 ### # of Observations per Site
 ```{r}
 #| label: observation-per-site
+#| fig-height: 6
+#| fig-width: 8
 
 ggplot(data = water_quality_weather |> 
          filter(!global_id %in% salinity_outlier_ids,
@@ -443,6 +451,8 @@ ggplot(data = water_quality_weather |>
 ### # of Observations per Elevation Code
 ```{r}
 #| label: observation-per-code
+#| fig-height: 6
+#| fig-width: 8
 
 ggplot(data = water_quality_weather |> 
          filter(!global_id %in% salinity_outlier_ids,
@@ -463,6 +473,8 @@ ggplot(data = water_quality_weather |>
 
 ### # Precipitation Peaks
 ```{r}
+#| fig-height: 6
+#| fig-width: 8
 
 # creating a new object `precipitation_peaks` from `salinity_prcp`
 precipitation_peaks <- salinity_prcp |>
@@ -654,6 +666,8 @@ ggplot(data = exploratory_salinity,
 ## Figure 4. - How Precipitation Explains Salinity
 ```{r}
 #| label: viz4
+#| fig-height: 6
+#| fig-width: 8
 
 ggplot(data = salinity_prcp,
        mapping = aes(x = sum_prcp,
