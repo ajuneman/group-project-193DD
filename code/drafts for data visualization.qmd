@@ -348,9 +348,6 @@ elv_viz <- monthly_surfcae_elv |>
   # filtering out all NA average elevation values
   filter(!avg_elv == "NaN")
 
-
-
-
 ```
 
 
@@ -471,10 +468,8 @@ ggplot(data = water_quality_weather |>
 
 ```
 
-### # Precipitation Peaks
+### Precipitation Peaks
 ```{r}
-#| fig-height: 6
-#| fig-width: 8
 
 # creating a new object `precipitation_peaks` from `salinity_prcp`
 precipitation_peaks <- salinity_prcp |>
