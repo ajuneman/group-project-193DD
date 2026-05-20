@@ -477,6 +477,10 @@ precipitation_peaks <- salinity_prcp |>
          # setting the y position for each event (dropping the 1.80 event lower for better visualization)
          label_y = c(4.5, 4.5, 3.5, 4.5))
 
+precipitation_peaks_facet <- precipitation_peaks |>
+  cross_join(tibble(site_full = unique(salinity_prcp$site_full))) |> 
+  mutate(label_y_2 = rep(c(40, 45, 40, 50), times = 3))
+
 
 
 ```
@@ -597,7 +601,6 @@ ggplot(data = salinity_prcp,
  
 
 ```
-
 
 
 
