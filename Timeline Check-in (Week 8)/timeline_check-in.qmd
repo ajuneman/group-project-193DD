@@ -572,7 +572,7 @@ cor.test(salinity_prcp$mean_salinity,
 
 ### Interpreting the Results
 
-#### STILL NEED TO DO
+
 
 # 4. Other exploratory visualizations
 
@@ -690,7 +690,8 @@ ggplot(data = water_quality_weather |>
 
 Both of these figures were added last-minute to the work plan after our data visualization presentation in class. We feel that the addition of this informtion is important in contextualizing our outputs. Venoco Bridge has the most amount of observations, followed by Phelps Bridge, and finally, East Channel. We can also see that elevation code 1 has the most amount of observations, followed by 0, anf finally, 2. Understanding the distribution of observations allows for the appropriate selection of  statistical methods, correct interpretation of analytical results, and effective and accurate communication of findings.
 
+\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 
-
+# 5. Plan for Elective
 
 
