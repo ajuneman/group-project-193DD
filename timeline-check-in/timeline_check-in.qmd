@@ -1,7 +1,7 @@
 ---
 title: "Timeline Check-in"
 author: "Madeline, Audrey, Maisie"
-format: pdf
+format: html
 date: "2026-05-22"
 ---
 
