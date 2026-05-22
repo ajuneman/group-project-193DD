@@ -388,6 +388,7 @@ We also chose to use Spearman’s correlation coefficient to test whether salini
 The test gave a coefficient value of 0.0166 and p-value of  0.8251, suggesting that precipitation alone does not strongly explain salinity.
 
 \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+
 # 3. Visualizations directly relevant to answering questions
 
 ## Figures
