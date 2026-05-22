@@ -76,10 +76,77 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 </head>
 
-<body class="fullcontent quarto-light">
+<body class="quarto-light">
 
 <div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
-
+<div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+  <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#set-up" id="toc-set-up" class="nav-link active" data-scroll-target="#set-up">1. Set up</a>
+  <ul class="collapse">
+  <li><a href="#packages" id="toc-packages" class="nav-link" data-scroll-target="#packages">Packages</a></li>
+  <li><a href="#data" id="toc-data" class="nav-link" data-scroll-target="#data">Data</a></li>
+  <li><a href="#cleaning-code" id="toc-cleaning-code" class="nav-link" data-scroll-target="#cleaning-code">Cleaning Code</a>
+  <ul class="collapse">
+  <li><a href="#cleaning-weather" id="toc-cleaning-weather" class="nav-link" data-scroll-target="#cleaning-weather">Cleaning Weather</a></li>
+  <li><a href="#cleaning-metadata" id="toc-cleaning-metadata" class="nav-link" data-scroll-target="#cleaning-metadata">Cleaning Metadata</a></li>
+  <li><a href="#cleaning-water-parameters" id="toc-cleaning-water-parameters" class="nav-link" data-scroll-target="#cleaning-water-parameters">Cleaning Water Parameters</a></li>
+  </ul></li>
+  <li><a href="#joining-code" id="toc-joining-code" class="nav-link" data-scroll-target="#joining-code">Joining Code</a>
+  <ul class="collapse">
+  <li><a href="#water-quality-metadata-water-parameters" id="toc-water-quality-metadata-water-parameters" class="nav-link" data-scroll-target="#water-quality-metadata-water-parameters">Water Quality = Metadata + Water Parameters</a></li>
+  <li><a href="#water-quality-weather-water-quality-weather" id="toc-water-quality-weather-water-quality-weather" class="nav-link" data-scroll-target="#water-quality-weather-water-quality-weather">Water Quality Weather = Water Quality + Weather</a></li>
+  </ul></li>
+  <li><a href="#wranglingsummarizing-code" id="toc-wranglingsummarizing-code" class="nav-link" data-scroll-target="#wranglingsummarizing-code">Wrangling/Summarizing Code</a>
+  <ul class="collapse">
+  <li><a href="#salinity-outliers" id="toc-salinity-outliers" class="nav-link" data-scroll-target="#salinity-outliers">Salinity Outliers</a></li>
+  <li><a href="#summarizing-precipitation" id="toc-summarizing-precipitation" class="nav-link" data-scroll-target="#summarizing-precipitation">Summarizing Precipitation</a></li>
+  <li><a href="#filtering-and-summarizing-salinity" id="toc-filtering-and-summarizing-salinity" class="nav-link" data-scroll-target="#filtering-and-summarizing-salinity">Filtering and Summarizing Salinity</a></li>
+  <li><a href="#joining-monthly_prcp-and-salinity_filtered" id="toc-joining-monthly_prcp-and-salinity_filtered" class="nav-link" data-scroll-target="#joining-monthly_prcp-and-salinity_filtered">Joining Monthly_prcp and Salinity_filtered</a></li>
+  </ul></li>
+  <li><a href="#exploratory-figure-code" id="toc-exploratory-figure-code" class="nav-link" data-scroll-target="#exploratory-figure-code">Exploratory Figure Code</a>
+  <ul class="collapse">
+  <li><a href="#exploring-salinity" id="toc-exploring-salinity" class="nav-link" data-scroll-target="#exploring-salinity">Exploring Salinity</a></li>
+  <li><a href="#exploring-water-surface-elevation" id="toc-exploring-water-surface-elevation" class="nav-link" data-scroll-target="#exploring-water-surface-elevation">Exploring Water Surface Elevation</a></li>
+  <li><a href="#creating-precipitation-peaks" id="toc-creating-precipitation-peaks" class="nav-link" data-scroll-target="#creating-precipitation-peaks">Creating Precipitation Peaks</a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#ideas-for-analysis-and-background" id="toc-ideas-for-analysis-and-background" class="nav-link" data-scroll-target="#ideas-for-analysis-and-background">2. Ideas for analysis and background</a>
+  <ul class="collapse">
+  <li><a href="#figures" id="toc-figures" class="nav-link" data-scroll-target="#figures">Figures</a>
+  <ul class="collapse">
+  <li><a href="#figure-1.---monthly-precipitation-at-ncos-time-series-w-rain-event-lines" id="toc-figure-1.---monthly-precipitation-at-ncos-time-series-w-rain-event-lines" class="nav-link" data-scroll-target="#figure-1.---monthly-precipitation-at-ncos-time-series-w-rain-event-lines">Figure 1. - Monthly Precipitation at NCOS (Time Series w/ Rain Event Lines)</a></li>
+  <li><a href="#figure-2.-salinity-time-series-w-prcp-highlights" id="toc-figure-2.-salinity-time-series-w-prcp-highlights" class="nav-link" data-scroll-target="#figure-2.-salinity-time-series-w-prcp-highlights">Figure 2. Salinity Time Series w/ Prcp Highlights</a></li>
+  <li><a href="#figure-3.---how-salinity-relates-to-water-surface-elevation-venoco-bridge" id="toc-figure-3.---how-salinity-relates-to-water-surface-elevation-venoco-bridge" class="nav-link" data-scroll-target="#figure-3.---how-salinity-relates-to-water-surface-elevation-venoco-bridge">Figure 3. - How Salinity Relates to Water Surface Elevation (Venoco Bridge)</a></li>
+  <li><a href="#figure-4.---how-salinity-varies-between-elevation-codes" id="toc-figure-4.---how-salinity-varies-between-elevation-codes" class="nav-link" data-scroll-target="#figure-4.---how-salinity-varies-between-elevation-codes">Figure 4. - How Salinity Varies Between Elevation Codes</a></li>
+  <li><a href="#figure-5.---how-precipitation-explains-salinity" id="toc-figure-5.---how-precipitation-explains-salinity" class="nav-link" data-scroll-target="#figure-5.---how-precipitation-explains-salinity">Figure 5. - How Precipitation Explains Salinity</a></li>
+  </ul></li>
+  <li><a href="#correlation-test" id="toc-correlation-test" class="nav-link" data-scroll-target="#correlation-test">Correlation Test</a>
+  <ul class="collapse">
+  <li><a href="#calculating-spearmans-correlation" id="toc-calculating-spearmans-correlation" class="nav-link" data-scroll-target="#calculating-spearmans-correlation">Calculating Spearman’s Correlation</a></li>
+  <li><a href="#interpreting-the-results" id="toc-interpreting-the-results" class="nav-link" data-scroll-target="#interpreting-the-results">Interpreting the Results</a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#other-exploratory-visualizations" id="toc-other-exploratory-visualizations" class="nav-link" data-scroll-target="#other-exploratory-visualizations">4. Other exploratory visualizations</a>
+  <ul class="collapse">
+  <li><a href="#comparing-across-groups" id="toc-comparing-across-groups" class="nav-link" data-scroll-target="#comparing-across-groups">Comparing Across Groups</a>
+  <ul class="collapse">
+  <li><a href="#boxplot-w-jitter---distribution-of-mean-salinity-values-across-sites" id="toc-boxplot-w-jitter---distribution-of-mean-salinity-values-across-sites" class="nav-link" data-scroll-target="#boxplot-w-jitter---distribution-of-mean-salinity-values-across-sites">Boxplot w/ Jitter - Distribution of Mean Salinity Values Across Sites</a></li>
+  <li><a href="#strip-chart-w-standard-deviation---how-mean-salinity-differs-between-sites" id="toc-strip-chart-w-standard-deviation---how-mean-salinity-differs-between-sites" class="nav-link" data-scroll-target="#strip-chart-w-standard-deviation---how-mean-salinity-differs-between-sites">Strip Chart w/ Standard Deviation - How Mean Salinity Differs Between Sites</a></li>
+  <li><a href="#ridgeline-plot---salinity-observation-distribution-across-ncos-sites" id="toc-ridgeline-plot---salinity-observation-distribution-across-ncos-sites" class="nav-link" data-scroll-target="#ridgeline-plot---salinity-observation-distribution-across-ncos-sites">Ridgeline Plot - Salinity Observation Distribution Across NCOS Sites</a></li>
+  </ul></li>
+  <li><a href="#distribution-of-observations" id="toc-distribution-of-observations" class="nav-link" data-scroll-target="#distribution-of-observations">Distribution of Observations</a>
+  <ul class="collapse">
+  <li><a href="#of-observations-per-site" id="toc-of-observations-per-site" class="nav-link" data-scroll-target="#of-observations-per-site"># of Observations per Site</a></li>
+  <li><a href="#of-observations-per-elevation-code" id="toc-of-observations-per-elevation-code" class="nav-link" data-scroll-target="#of-observations-per-elevation-code"># of Observations per Elevation Code</a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#plan-for-elective" id="toc-plan-for-elective" class="nav-link" data-scroll-target="#plan-for-elective">5. Plan for Elective</a></li>
+  </ul>
+</nav>
+</div>
 <main class="content" id="quarto-document-content">
 
 <header id="title-block-header" class="quarto-title-block default">
