@@ -365,12 +365,27 @@ precipitation_peaks_facet <- precipitation_peaks |>
 
 # 2. Ideas for analysis and background
 
+The overarching question for our project is: How does precipitation explain salinity? 
 
+We expect that more precipitation will generally lead to lower salinity because rainfall adds freshwater and dilutes saltier water. However, salinity is also affected by water depth, evaporation and whether the ecosystem is connected to the ocean.
 
+This is especially relevant as North Campus Open Space is a connected coastal wetland system. Because of this, the salinity is influenced by more than rainfall alone. Harrington and Wood (2014), although focused on an Australian wetland, help support this idea by showing that ocean-driven saltwater movement can also affect salinity. Rainfall can lower salinity by adding freshwater, while sea-level changes and saltwater entering the system can raise salinity again.
 
+Additionally, between 2015 to 2016 salinity was reported to increase at NCOS during dry periods because evaporation concentrates salts, while rainfall can lower salinity by adding freshwater (Clark, 2016). Rainfall lowered salinity by adding freshwater to the slough, but major storm and breach events reconnected the slough to the ocean, allowing seawater to enter and raise salinity again (Clark, 2016). The report also notes that salinity often increases with depth, so precipitation helps explain salinity but is not the only factor (Clark, 2016).
 
+References:
 
+Clark, R. (2016). Water Quality of North Campus Open Space & Devereux Slough: Fall 2015 - Spring 2016. [online] Available at: https://escholarship.org/uc/item/2923f039 [Accessed 20 May 2026].
 
+Wood, C. and Harrington, G.A. (2014). Influence of Seasonal Variations in Sea Level on the Salinity Regime of a Coastal Groundwater–Fed Wetland. Groundwater, 53(1), pp.90–98. doi:10.1111/gwat.12168.
+
+Ideas for analyses to answer question and some preliminary code to run those analyses:
+
+To answer our question, “How does precipitation explain salinity?”, we analysed whether monthly precipitation is related to monthly average salinity across NCOS sites. Our draft code already cleans and joins the weather, metadata, and water-quality datasets, then calculates total monthly precipitation and mean monthly salinity by site.
+
+We also chose to use Spearman’s correlation coefficient to test whether salinity tends to decrease as precipitation increases. 
+
+The test gave a coefficient value of 0.0166 and p-value of  0.8251, suggesting that precipitation alone does not strongly explain salinity.
 
 \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 # 3. Visualizations directly relevant to answering questions
