@@ -84,9 +84,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#set-up" id="toc-set-up" class="nav-link active" data-scroll-target="#set-up">1. Set up</a>
-  <ul class="collapse">
-  <li><a href="#packages" id="toc-packages" class="nav-link" data-scroll-target="#packages">Packages</a></li>
+  <li><a href="#packages" id="toc-packages" class="nav-link active" data-scroll-target="#packages">Packages</a></li>
   <li><a href="#data" id="toc-data" class="nav-link" data-scroll-target="#data">Data</a></li>
   <li><a href="#cleaning-code" id="toc-cleaning-code" class="nav-link" data-scroll-target="#cleaning-code">Cleaning Code</a>
   <ul class="collapse">
@@ -112,9 +110,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#exploring-water-surface-elevation" id="toc-exploring-water-surface-elevation" class="nav-link" data-scroll-target="#exploring-water-surface-elevation">Exploring Water Surface Elevation</a></li>
   <li><a href="#creating-precipitation-peaks" id="toc-creating-precipitation-peaks" class="nav-link" data-scroll-target="#creating-precipitation-peaks">Creating Precipitation Peaks</a></li>
   </ul></li>
-  </ul></li>
-  <li><a href="#ideas-for-analysis-and-background" id="toc-ideas-for-analysis-and-background" class="nav-link" data-scroll-target="#ideas-for-analysis-and-background">2. Ideas for analysis and background</a>
-  <ul class="collapse">
   <li><a href="#figures" id="toc-figures" class="nav-link" data-scroll-target="#figures">Figures</a>
   <ul class="collapse">
   <li><a href="#figure-1.---monthly-precipitation-at-ncos-time-series-w-rain-event-lines" id="toc-figure-1.---monthly-precipitation-at-ncos-time-series-w-rain-event-lines" class="nav-link" data-scroll-target="#figure-1.---monthly-precipitation-at-ncos-time-series-w-rain-event-lines">Figure 1. - Monthly Precipitation at NCOS (Time Series w/ Rain Event Lines)</a></li>
@@ -128,9 +123,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#calculating-spearmans-correlation" id="toc-calculating-spearmans-correlation" class="nav-link" data-scroll-target="#calculating-spearmans-correlation">Calculating Spearman’s Correlation</a></li>
   <li><a href="#interpreting-the-results" id="toc-interpreting-the-results" class="nav-link" data-scroll-target="#interpreting-the-results">Interpreting the Results</a></li>
   </ul></li>
-  </ul></li>
-  <li><a href="#other-exploratory-visualizations" id="toc-other-exploratory-visualizations" class="nav-link" data-scroll-target="#other-exploratory-visualizations">4. Other exploratory visualizations</a>
-  <ul class="collapse">
   <li><a href="#comparing-across-groups" id="toc-comparing-across-groups" class="nav-link" data-scroll-target="#comparing-across-groups">Comparing Across Groups</a>
   <ul class="collapse">
   <li><a href="#boxplot-w-jitter---distribution-of-mean-salinity-values-across-sites" id="toc-boxplot-w-jitter---distribution-of-mean-salinity-values-across-sites" class="nav-link" data-scroll-target="#boxplot-w-jitter---distribution-of-mean-salinity-values-across-sites">Boxplot w/ Jitter - Distribution of Mean Salinity Values Across Sites</a></li>
@@ -142,8 +134,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#of-observations-per-site" id="toc-of-observations-per-site" class="nav-link" data-scroll-target="#of-observations-per-site"># of Observations per Site</a></li>
   <li><a href="#of-observations-per-elevation-code" id="toc-of-observations-per-elevation-code" class="nav-link" data-scroll-target="#of-observations-per-elevation-code"># of Observations per Elevation Code</a></li>
   </ul></li>
-  </ul></li>
-  <li><a href="#plan-for-elective" id="toc-plan-for-elective" class="nav-link" data-scroll-target="#plan-for-elective">5. Plan for Elective</a></li>
   </ul>
 </nav>
 </div>
@@ -180,8 +170,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<section id="set-up" class="level1">
-<h1>1. Set up</h1>
+<p>#1. Set up</p>
 <section id="packages" class="level2">
 <h2 class="anchored" data-anchor-id="packages">Packages</h2>
 <div class="cell">
@@ -595,11 +584,7 @@ dbl (7): ObjectID, Depth Code, DO (mg/L), DO (%sat), Conductivity (uS/cm), S...
 <span id="cb34-16"><a href="#cb34-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">label_y_2 =</span> <span class="fu">rep</span>(<span class="fu">c</span>(<span class="dv">40</span>, <span class="dv">45</span>, <span class="dv">40</span>, <span class="dv">50</span>), <span class="at">times =</span> <span class="dv">3</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\</p>
-</section>
-</section>
-</section>
-<section id="ideas-for-analysis-and-background" class="level1">
-<h1>2. Ideas for analysis and background</h1>
+<p>#2. Ideas for analysis and background</p>
 <p>The overarching question for our project is: How does precipitation explain salinity?</p>
 <p>We expect that more precipitation will generally lead to lower salinity because rainfall adds freshwater and dilutes saltier water. However, salinity is also affected by water depth, evaporation and whether the ecosystem is connected to the ocean.</p>
 <p>This is especially relevant as North Campus Open Space is a connected coastal wetland system. Because of this, the salinity is influenced by more than rainfall alone. Harrington and Wood (2014), although focused on an Australian wetland, help support this idea by showing that ocean-driven saltwater movement can also affect salinity. Rainfall can lower salinity by adding freshwater, while sea-level changes and saltwater entering the system can raise salinity again.</p>
@@ -611,7 +596,10 @@ dbl (7): ObjectID, Depth Code, DO (mg/L), DO (%sat), Conductivity (uS/cm), S...
 <p>To answer our question, “How does precipitation explain salinity?”, we analysed whether monthly precipitation is related to monthly average salinity across NCOS sites. Our draft code already cleans and joins the weather, metadata, and water-quality datasets, then calculates total monthly precipitation and mean monthly salinity by site.</p>
 <p>We also chose to use Spearman’s correlation coefficient to test whether salinity tends to decrease as precipitation increases.</p>
 <p>The test gave a coefficient value of 0.0166 and p-value of 0.8251, suggesting that precipitation alone does not strongly explain salinity.</p>
-<p>\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\ # 3. Visualizations directly relevant to answering questions</p>
+<p>\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\</p>
+<p>#3. Visualizations directly relevant to answering questions</p>
+</section>
+</section>
 <section id="figures" class="level2">
 <h2 class="anchored" data-anchor-id="figures">Figures</h2>
 <section id="figure-1.---monthly-precipitation-at-ncos-time-series-w-rain-event-lines" class="level3">
@@ -838,11 +826,9 @@ sample estimates:
 <section id="interpreting-the-results" class="level3">
 <h3 class="anchored" data-anchor-id="interpreting-the-results">Interpreting the Results</h3>
 <p>A Spearman’s rank correlation was conducted to examine the relationship between monthly precipitation and monthly average salinity. Results indicated no statistically significant relationship between the two variables (rho = 0.017, S = 939,961, p = 0.825). The near-zero rho suggests that monthly precipitation has negligible association with average salinity at this scale. It should be noted that exact p-values could not be computed due to ties in the data, so a normal approximation was used; this does not meaningfully affect the interpretation. These results may reflect lag effects between precipitation events and salinity response, spatial or hydrological disconnect between measurement sites, or the influence of other drivers, such as evaporation or tidal exchange, that operate independently of local precipitation.</p>
+<p>#4. Other exploratory visualizations</p>
 </section>
 </section>
-</section>
-<section id="other-exploratory-visualizations" class="level1">
-<h1>4. Other exploratory visualizations</h1>
 <section id="comparing-across-groups" class="level2">
 <h2 class="anchored" data-anchor-id="comparing-across-groups">Comparing Across Groups</h2>
 <section id="boxplot-w-jitter---distribution-of-mean-salinity-values-across-sites" class="level3">
@@ -973,12 +959,9 @@ sample estimates:
 <p>Both of these figures were added last-minute to the work plan after our data visualization presentation in class. We feel that the addition of this information is important in contextualizing our outputs. Venoco Bridge has the most amount of observations, followed by Phelps Bridge, and finally, East Channel. We can also see that elevation code 1 has the most amount of observations, followed by 0, and finally, 2. Understanding the distribution of observations allows for the appropriate selection of statistical methods, correct interpretation of analytical results, and effective and accurate communication of findings.</p>
 <p>\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\<br>
 </p>
-</section>
-</section>
-</section>
-<section id="plan-for-elective" class="level1">
-<h1>5. Plan for Elective</h1>
+<p>#5. Plan for Elective</p>
 <p>For our elective, we have chosen to create a map of the NCOS area depicting the different keystone species that breed, live, and migrate through these areas. The map will depict water levels from spring of 2023, and be modeled after other NCOS maps online. The map will specifically point to locations such as Phelps Bridge, East Channel, and Venoco Bridge, representing our three main points in our data analysis process. At each site I will choose pictures of different keystone organisms that live in these areas, as well as their preferred salinity conditions according to outside local research. The map will be made of collaged paper materials, and will have additional pictures of the organisms that live and exist there. For each organism, there will be their ideal salinity condition (shown through cups of salt or another visual model) next to the organism, to depict the condiitons they prefer to live in. The description of the image will be one map that is multimedia and will be handmade and depict a map. Over the next two weeks, our group will collect the adequate materials in the next week, print out an example map to add our collage materials over it, look at water levels for the 2023 year and adjust as necessary, and research organisms specific to the NCOS site. Before the end of the week 9 weekend, we will have all materials collected and information logged on a shared google doc so that all parties can contribute and see the research and materials needed. Over the week 9 weekend, group members will select a time to meet up and work artistically on the project, and finishing touches will be made in the remaining time before it is due, including working on a presentation format.</p>
+</section>
 </section>
 
 </main>
