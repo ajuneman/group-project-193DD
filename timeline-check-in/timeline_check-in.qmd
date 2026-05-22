@@ -6,7 +6,7 @@ toc: true
 date: "2026-05-22"
 ---
 
-# 1. Set up
+#1. Set up
 
 ## Packages
 ```{r}
@@ -363,7 +363,7 @@ precipitation_peaks_facet <- precipitation_peaks |>
 
 \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 
-# 2. Ideas for analysis and background
+#2. Ideas for analysis and background
 
 The overarching question for our project is: How does precipitation explain salinity? 
 
@@ -389,7 +389,7 @@ The test gave a coefficient value of 0.0166 and p-value of  0.8251, suggesting t
 
 \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 
-# 3. Visualizations directly relevant to answering questions
+#3. Visualizations directly relevant to answering questions
 
 ## Figures
 
@@ -591,7 +591,7 @@ cor.test(salinity_prcp$mean_salinity,
 A Spearman's rank correlation was conducted to examine the relationship between monthly precipitation and monthly average salinity. Results indicated no statistically significant relationship between the two variables (rho = 0.017, S = 939,961, p = 0.825). The near-zero rho suggests that monthly precipitation has negligible association with average salinity at this scale. It should be noted that exact p-values could not be computed due to ties in the data, so a normal approximation was used; this does not meaningfully affect the interpretation. These results may reflect lag effects between precipitation events and salinity response, spatial or hydrological disconnect between measurement sites, or the influence of other drivers, such as evaporation or tidal exchange, that operate independently of local precipitation.
 
 
-# 4. Other exploratory visualizations
+#4. Other exploratory visualizations
 
 ## Comparing Across Groups
 
@@ -709,6 +709,6 @@ Both of these figures were added last-minute to the work plan after our data vis
 
 \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 
-# 5. Plan for Elective
+#5. Plan for Elective
 
 For our elective, we have chosen to create a map of the NCOS area depicting the different keystone species that breed, live, and migrate through these areas. The map will depict water levels from spring of 2023, and be modeled after other NCOS maps online. The map will specifically point to locations such as Phelps Bridge, East Channel, and Venoco Bridge, representing our three main points in our data analysis process. At each site I will choose pictures of different keystone organisms that live in these areas, as well as their preferred salinity conditions according to outside local research. The map will be made of collaged paper materials, and will have additional pictures of the organisms that live and exist there. For each organism, there will be their ideal salinity condition (shown through cups of salt or another visual model) next to the organism, to depict the condiitons they prefer to live in. The description of the image will be one map that is multimedia and will be handmade and depict a map. Over the next two weeks, our group will collect the adequate materials in the next week, print out an example map to add our collage materials over it, look at water levels for the 2023 year and adjust as necessary, and research organisms specific to the NCOS site. Before the end of the week 9 weekend, we will have all materials collected and information logged on a shared google doc so that all parties can contribute and see the research and materials needed. Over the week 9 weekend, group members will select a time to meet up and work artistically on the project, and finishing touches will be made in the remaining time before it is due, including working on a presentation format. 
