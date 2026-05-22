@@ -41,7 +41,7 @@ library(wesanderson)
 
 ## Rendered Output
 
-The rendered Week 8 Timeline Check-in is here [View PDF]()
+The rendered output for the Week 8 Timeline Check-in in this repository is [here](file:///Users/audreyjuneman/Desktop/UCSB/ENVS/ENVS-193DD/github/group-project-193DD/timeline-check-in/timeline_check-in.html)
 
 
 
