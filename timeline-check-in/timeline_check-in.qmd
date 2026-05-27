@@ -282,7 +282,9 @@ salinity_filtered <- water_quality_weather |>
   group_by(site_full, month, year) |> 
   # calculate mean salinity (per site per month))
   summarize(mean_salinity = mean(salinity_ppt, na.rm = TRUE),
-            .groups = "drop")
+          # calculating mean temperature (in f) 
+           mean_temp_f = (mean(temperature_c, na.rm = TRUE) * 9/5) + 32,
+          .groups = "drop")
 ```
 
 ### Joining Monthly_prcp and Salinity_filtered
@@ -599,52 +601,37 @@ Elevation (Venoco Bridge)")
 
 ```
 
-### Figure 3. - How Salinity Varies Between Elevation Codes
+### Figure 3. -  How Temperature Relates to Salinity Across NCOS Sites
 ```{r}
-#| label: viz3
 
 # base layer: ggplot
-# data: `exploratory_salinity`
-ggplot(data = exploratory_salinity,
-       # x: elevation code
-       mapping = aes(x = elevation_code,
-                     # y: mean salinity
-                     y = mean_salinity)) +
-  # data represented by open points
-  geom_point(shape = 21) +
-  # calculating median of data & representing by points
-  stat_summary(fun = median,
-               geom = "point",
-               # custom color
-               color = "maroon") +
-  # calculating median of data, connecting medians per site by a line
-  stat_summary(fun = median,
-               geom = "line",
-               # custom color
-               color = "maroon",
-               # all data into one group to connect across x categories
-               group = 1) +
-  # labeling x and y axes
-  labs(x = "Elevation Code",
-       y = "Mean Salinity (ppt)",
-       # adding in title
-       title = "Figure 3. Mean Salinity Differences Between 
-Elevation Codes") +
-  # each site has own plot
+# data: salinity_prcp
+ggplot(data = salinity_prcp,
+       # x axis: monthly average temperature in fahrenheit
+       # y axis: monthly average salinity
+       # color by site
+       mapping = aes(x = mean_temp_f,
+                     y = mean_salinity,
+                     color = site_full)) +
+  # data represented by points
+  geom_point() +
+  # each site gets its own plot
   facet_wrap(~ site_full) +
-  # adding custom themeing
+  # custom color palette
+  scale_color_manual(values = wes_palette("Royal2")) +
+  # adding theming
   theme_bw() +
-  # defining the discrete elevation codes
-  scale_x_discrete(breaks = c(0,1, 2, 3)) +
-  # Moves the y-axis tick marks and labels to the right
-  # removing space between y axis and data
-  scale_y_continuous(position = "right",
-                     expand = c(0,0.3)) +
-  # Flips the coordinate system
-  coord_flip()
+  # removing legend (redundant with facet labels)
+  theme(legend.position = "none") +
+  # labeling axes and title
+  labs(x = "Monthly Average Temperature (°F)",
+       y = "Monthly Average Salinity (ppt)",
+       title = "Figure 3. How Temperature Relates to Salinity Across NCOS Sites")
 
 
 ```
+
+
 
 ### Figure 4. - How Precipitation Explains Salinity
 ```{r}
@@ -679,7 +666,7 @@ ggplot(data = salinity_prcp,
   labs(x = "Monthly Precipitation (in)",
        y = "Monthly Average Salinity (ppt)",
        # adding figure title
-       title = "Figure 4. How Precipitation Explains Salinity")
+       title = "Figure 4. How Precipitation Relates to Salinity Across NCOS Sites")
 
 ```
 
@@ -693,16 +680,31 @@ ggplot(data = salinity_prcp,
 # visualization dataframe
 cor.test(elv_viz$mean_salinity,
          # second variable: average water surface elevation from the
-         #elevation visualization dataframe
+         # elevation visualization dataframe
          elv_viz$avg_elv,
-         #Uses Spearman's rank correlation
+         # uses Spearman's rank correlation
          method = "spearman")
 
 ```
 
-### Correlation Test 2: Calculating Spearman's Correlation (salinity/precipitation)
+### Correlation Test 2: Calculating Spearman's Correlation (salinity/temperature)
 ```{r}
 #| label: cor-test-2
+
+# First variable: mean salinity column from the salinity_prcp dataframe
+cor.test(salinity_prcp$mean_salinity,
+         # Second variable: mean temperature in degree F from the same
+         #data frame
+         salinity_prcp$mean_temp_f,
+         # using Spearman's rank correlation
+         method = "spearman")
+
+```
+
+
+### Correlation Test 3: Calculating Spearman's Correlation (salinity/precipitation)
+```{r}
+#| label: cor-test-3
 
 # First variable: mean salinity column from the salinity_prcp dataframe
 cor.test(salinity_prcp$mean_salinity, 
@@ -717,12 +719,19 @@ cor.test(salinity_prcp$mean_salinity,
 
 ### Interpreting the Results
 
+Three Spearman's rank correlation tests were conducted to examine relationships between monthly average salinity and three environmental variables: water surface elevation, temperature, and precipitation. In all three tests, exact p-values could not be computed due to ties in the data, so normal approximations were used; this does not meaningfully affect interpretation.
+
 #### Correlation Test 1. 
-A Spearman's rank correlation was conducted to examine the relationship between monthly average water surface elevation and monthly average salinity. Results indicated no statistically significant relationship between the two variables (rho = 0.228, S = 30,660, p = 0.075). While the p-value narrowly exceeds the conventional significance threshold of 0.05, the moderate positive rho suggests a weak tendency for salinity to increase with rising water surface elevation, which may warrant further investigation. These results should be interpreted with caution given the relatively small sample size, which reduces statistical power and may explain the marginal p-value. The observed trend could reflect tidal or hydrological dynamics in which higher water levels correspond to greater saltwater intrusion, though other confounding factors such as seasonal variation, site-specific conditions, or measurement timing may also contribute to this pattern.
+Results indicated no statistically significant relationship between monthly average water surface elevation and salinity (rho = 0.228, S = 30,660, p = 0.075). While the p-value narrowly exceeds the 0.05 threshold, the moderate positive rho suggests a weak tendency for salinity to increase with rising water levels, which may reflect tidal dynamics or saltwater intrusion and warrants further investigation with a larger sample.
 
+#### Correlation Test 2.
+Results indicated no statistically significant relationship between monthly average temperature and salinity (rho = 0.032, S = 924,842, p = 0.666). The near-zero rho suggests temperature has negligible direct association with salinity at this scale, though indirect effects through processes such as evaporation may not be captured at this temporal resolution.
 
-#### Correlation Test 2. 
-A Spearman's rank correlation was conducted to examine the relationship between monthly precipitation and monthly average salinity. Results indicated no statistically significant relationship between the two variables (rho = 0.0242, S = 932,653, p = 0.746). The near-zero rho suggests that monthly precipitation has negligible association with average salinity at this scale. It should be noted that exact p-values could not be computed due to ties in the data, so a normal approximation was used; this does not meaningfully affect the interpretation. These results may reflect lag effects between precipitation events and salinity response, spatial or hydrological disconnect between measurement sites, or the influence of other drivers, such as evaporation or tidal exchange, that operate independently of local precipitation.
+#### Correlation Test 3. 
+Results indicated no statistically significant relationship between monthly precipitation and salinity (rho = 0.024, S = 932,653, p = 0.746). The near-zero rho suggests precipitation has negligible association with salinity at this scale, which may reflect lag effects between precipitation events and salinity response, or the influence of other drivers such as tidal exchange operating independently of local precipitation.
+
+#### Overal Interpretation
+Taken together, the results of all three correlation tests suggest that no single environmental variable meaningfully predicts monthly average salinity at NCOS at this scale. This is likely a reflection of the inherent complexity of salinity dynamics in coastal wetland systems, where salinity is shaped by the simultaneous interaction of multiple physical, hydrological, and biological processes. Tidal exchange, freshwater input from precipitation and groundwater, evaporation, seasonal temperature fluctuations, water surface elevation, and site-specific channel geometry all influence salinity in ways that are deeply interconnected and often operate on different timescales.
 
 
 # 4. Other exploratory visualizations
@@ -842,6 +851,60 @@ ggplot(data = water_quality_weather |>
        title = "Observation Count Across Elevation Codes")
 
 ```
+
+
+
+## Difference in Salinity Between Elevation Codes
+
+### How Salinity Varies Between Elevation Codes
+```{r}
+#| label: viz3
+
+# base layer: ggplot
+# data: `exploratory_salinity`
+ggplot(data = exploratory_salinity,
+       # x: elevation code
+       mapping = aes(x = elevation_code,
+                     # y: mean salinity
+                     y = mean_salinity)) +
+  # data represented by open points
+  geom_point(shape = 21) +
+  # calculating median of data & representing by points
+  stat_summary(fun = median,
+               geom = "point",
+               # custom color
+               color = "maroon") +
+  # calculating median of data, connecting medians per site by a line
+  stat_summary(fun = median,
+               geom = "line",
+               # custom color
+               color = "maroon",
+               # all data into one group to connect across x categories
+               group = 1) +
+  # labeling x and y axes
+  labs(x = "Elevation Code",
+       y = "Mean Salinity (ppt)",
+       # adding in title
+       title = "Mean Salinity Differences Between 
+Elevation Codes") +
+  # each site has own plot
+  facet_wrap(~ site_full) +
+  # adding custom themeing
+  theme_bw() +
+  # defining the discrete elevation codes
+  scale_x_discrete(breaks = c(0,1, 2, 3)) +
+  # Moves the y-axis tick marks and labels to the right
+  # removing space between y axis and data
+  scale_y_continuous(position = "right",
+                     expand = c(0,0.3)) +
+  # Flips the coordinate system
+  coord_flip()
+
+
+```
+
+
+
 
 Both of these figures were added last-minute to the work plan after our data visualization presentation in class. We feel that the addition of this information is important in contextualizing our outputs. Venoco Bridge has the most amount of observations, followed by Phelps Bridge, and finally, East Channel. We can also see that elevation code 1 has the most amount of observations, followed by 0, and finally, 2. Understanding the distribution of observations allows for the appropriate selection of  statistical methods, correct interpretation of analytical results, and effective and accurate communication of findings.
 
