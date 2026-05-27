@@ -17,6 +17,7 @@ library(ggridges)
 library(ggplot2)
 library(NatParksPalettes)
 library(wesanderson)
+library(patchwork)
 ```
 
 ## Data and file information
@@ -41,7 +42,8 @@ library(wesanderson)
 
 ## Rendered Output
 
-The rendered output for the Week 8 Timeline Check-in in this repository is: [here](https://ajuneman.github.io/group-project-193DD/timeline-check-in/timeline_check-in.html). 
+The rendered output for the revised Week 8 Timeline Check-in in this repository is: [here](https://ajuneman.github.io/group-project-193DD/timeline-check-in/timeline_check-in.html).
+
 
 
 
