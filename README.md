@@ -22,6 +22,7 @@ library(patchwork)
 
 ## Data and file information
 
+.
 ├── code
 │   ├── drafts for data visualization.qmd
 │   └── drafts-for-data-visualization.pdf
@@ -29,20 +30,23 @@ library(patchwork)
 │   ├── NCOS_YSI_Water_Quality_Monitoring_0.csv
 │   ├── NOAA-weather-data.csv
 │   └── YSI_Data_Begin_1.csv
-├── Group Project Code.qmd
 ├── group-project-193DD.Rproj
+├── proposal_deleteb4submit.R
 ├── README.md
-├── readmebackup.R
-└── Timeline Check-in (Week 8)
+└── timeline-check-in
+    ├── timeline_check-in_files
+    │   └── figure-html
+    │       ├── stack-plot-1.png
+    │       └── unnamed-chunk-1-1.png
     ├── timeline_check-in.pdf
     └── timeline_check-in.qmd
 
-4 directories, 11 files
+6 directories, 12 files
 
 
 ## Rendered Output
 
-The rendered output for the revised Week 8 Timeline Check-in in this repository is: [here](https://ajuneman.github.io/group-project-193DD/timeline-check-in/timeline_check-in.html).
+The rendered output for the revised Week 8 Timeline Check-in in this repository is: [here](https://ajuneman.github.io/group-project-193DD/timeline-check-in/timeline_check-in.pdf).
 
 
 
