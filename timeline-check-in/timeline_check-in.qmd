@@ -601,7 +601,7 @@ Elevation (Venoco Bridge)")
 
 ```
 
-### Figure 3. -  How Temperature Relates to Salinity Across NCOS Sites
+### Figure 3. - How Temperature Relates to Salinity Across NCOS Sites
 ```{r}
 
 # base layer: ggplot
