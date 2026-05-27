@@ -637,8 +637,22 @@ ggplot(data = salinity_prcp,
 
 ## Correlation Test
 
-### Calculating Spearman's Correlation
+### Correlation Test 1: Calculating Spearman's Correlation (salinity/water surface elevation)
 ```{r}
+#| label: cor-test-1
+
+# First variable: mean salinity column from the elevation visualization dataframe
+cor.test(elv_viz$mean_salinity,
+         # second variable: average water surface elevation from the elevation visualization dataframe
+         elv_viz$avg_elv,
+         #Uses Spearman's rank correlation
+         method = "spearman")
+
+```
+
+### Correlation Test 2: Calculating Spearman's Correlation (salinity/precipitation)
+```{r}
+#| label: cor-test-2
 
 # First variable: mean salinity column from the salinity_prcp dataframe
 cor.test(salinity_prcp$mean_salinity, 
@@ -650,8 +664,14 @@ cor.test(salinity_prcp$mean_salinity,
 ```
 
 
+
 ### Interpreting the Results
 
+#### Correlation Test 1. 
+A Spearman's rank correlation was conducted to examine the relationship between monthly average water surface elevation and monthly average salinity. Results indicated no statistically significant relationship between the two variables (rho = 0.228, S = 30,660, p = 0.075). While the p-value narrowly exceeds the conventional significance threshold of 0.05, the moderate positive rho suggests a weak tendency for salinity to increase with rising water surface elevation, which may warrant further investigation. These results should be interpreted with caution given the relatively small sample size, which reduces statistical power and may explain the marginal p-value. The observed trend could reflect tidal or hydrological dynamics in which higher water levels correspond to greater saltwater intrusion, though other confounding factors such as seasonal variation, site-specific conditions, or measurement timing may also contribute to this pattern.
+
+
+#### Correlation Test 2. 
 A Spearman's rank correlation was conducted to examine the relationship between monthly precipitation and monthly average salinity. Results indicated no statistically significant relationship between the two variables (rho = 0.0242, S = 932,653, p = 0.746). The near-zero rho suggests that monthly precipitation has negligible association with average salinity at this scale. It should be noted that exact p-values could not be computed due to ties in the data, so a normal approximation was used; this does not meaningfully affect the interpretation. These results may reflect lag effects between precipitation events and salinity response, spatial or hydrological disconnect between measurement sites, or the influence of other drivers, such as evaporation or tidal exchange, that operate independently of local precipitation.
 
 
