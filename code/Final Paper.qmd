@@ -2,13 +2,358 @@
 title: "Timeline Check-in"
 author: "Madeline, Audrey, Maisie"
 format: pdf
+echo: false
 toc: true
 date: "2026-05-22"
 execute: 
   message: false
   warning: false
-  code: false 
 ---
+
+```{r}
+#| label: packages
+
+# general use
+library(tidyverse)
+library(janitor)
+
+# file organization
+library(here)
+
+# Boxplot Visualization
+
+library(hrbrthemes)
+
+library(viridis)
+
+# text label instead of legend
+library(cowplot)
+
+# Ridgeline Plot
+#install.packages("ggridges")
+library(ggridges)
+#install.packages("ggplot2")
+library(ggplot2)
+
+# Color Palette
+library(NatParksPalettes)
+library(wesanderson)
+
+# Use ragg_png device for better font rendering and system font support
+knitr::opts_chunk$set(dev = "ragg_png")
+
+# to stack plots
+library(patchwork)
+
+```
+
+```{r}
+#| label: data
+
+# weather data from NOAA weather station
+weather <- read_csv(here("data", "NOAA-weather-data.csv"))
+
+# water quality survey metadata
+metadata <- read_csv(here("data", "NCOS_YSI_Water_Quality_Monitoring_0.csv"))
+
+# water quality parameter measurements
+water_parameters <- read_csv(here("data", "YSI_Data_Begin_1.csv"))
+
+```
+
+```{r}
+#| label: all-figure-code
+
+weather_clean <- weather |> 
+  # made column names all lowercase
+  clean_names() |> 
+  # puts date in proper format and makes sure its understood as 
+  # date (not as chr)
+  mutate(date = mdy(date)) |> 
+  # keeping only these 4 columns of interest
+  select(date, prcp, tmax, tmin) |> 
+  # creating new columns for month and year
+  # extracting month from the date (needs to be in the standard date format 
+  # for this function to work)
+  mutate(month = month(date),
+         year = year(date)) |> 
+  mutate(wy = case_when(
+    # when month os october or later, assign a value of year +1
+    # in the water ywar for next year
+    month >= 10 ~ year + 1,
+    # keeping all months < 10 the same (sept or earlier), assigning value
+    # of existing year
+    .default = year
+    ))
+
+
+metadata_clean <- metadata |> 
+  # col names easier to work with (all lowercase w/ _)
+  clean_names() |> 
+  # "!" is the "not-operator", columns we DONT want to keep, excluding
+  select(!c(object_id, creator, editor)) |> 
+  mutate(monitoring_date = mdy_hms(monitoring_date)) |> 
+  rename(monitoring_datetime = monitoring_date) |> 
+  mutate(month = month(monitoring_datetime),
+         year = year(monitoring_datetime)) |> 
+  # assigning water year
+  mutate(wy = case_when(
+    month >= 10 ~ year +1,
+    .default = year )) |> 
+  # creatig new column for site full name
+  mutate(site_full = case_when(
+    site_name == "east_channel" ~ "East Channel",
+    site_name == "phelps_bridge" ~ "Phelps Bridge",
+    site_name == "venoco_bridge" ~ "Venoco Bridge",
+    site_name == "other" ~ "Other"
+  )) |> 
+  # filter out Other observations
+  filter(site_full != "Other")
+
+# creating a new object from water parameters
+water_parameters_clean <- water_parameters |> 
+  # cleaning column names
+  clean_names() |> 
+  # "!" not operator, excluding unneeded columns
+  select(!c(creator, editor)) |> 
+  # renaming depth code to be elevation code to better represent methodology
+  rename(elevation_code = depth_code) |> 
+  ## Everything below came from visualizing the data first and defining what 
+  ## to fix/add
+  # fixing a mistake in the data
+  mutate(elevation_code = case_when(
+    # anytime theres a 10 in elevation code, replace it with a 1
+    elevation_code == 10 ~ 1,
+    # everything else, keep the same
+    .default = elevation_code)) |>
+  mutate(
+    # turning column into a factor
+    elevation_code = as_factor(elevation_code),
+    # defining the correct order for the levels of the factor
+    elevation_code = fct_relevel(elevation_code,
+                                 # write in the order you want
+                                 "0", "1", "2", "3", "4", "5", "6"))
+
+# full joining
+water_quality <- full_join(
+  # left data frame
+  x = metadata_clean,
+  # right data frame
+  y = water_parameters_clean,
+  # name the columns in each df that you want to join by 
+  # (naming the shared column)
+  by = c("global_id" = "parent_global_id")) |> 
+  select(
+    # information about the observation
+    global_id, monitoring_datetime, time_of_wq_measurement, monitor_name,
+    weather, 
+    site_name, other_site_name, site_full, x, y,
+    # water information
+    water_surface_elevation, flow, notes,
+    #measurement information
+    elevation_code, do_mg_l, do_percent_sat, conductivity_u_s_cm,
+    salinity_ppt, temperature_c
+  ) |> 
+  # taking the date out of this column, dont want the time
+  mutate(date = date(monitoring_datetime)) |> 
+  # moving the new date column to a better location within the df
+  relocate(date, .after = monitoring_datetime) |> 
+  # dont need this column anymore
+  select(!monitoring_datetime)
+
+# left join
+water_quality_weather <- left_join(
+  # left data frame
+  x = water_quality,
+  # right data frame
+  y = weather_clean,
+  # joining these dfs by their date column
+  by = "date")
+
+# creating new obj 
+salinity_outlier_ids <- water_quality_weather |> 
+  # filtering to only include outlier values
+  filter(salinity_ppt > 1410) |> 
+  # extracting the global id column as a vector usign pull
+  pull(global_id)
+
+# create new object from `water_quality_weather`
+monthly_prcp <- water_quality_weather |> 
+  # only include elevation codes 0, 1, and 2
+  filter(elevation_code %in% c("0", "1", "2")) |> 
+  # get rid of site names w/ "other"
+  filter(!site_full == "NA") |> 
+  # removing any duplicate rows based on the combination of month, 
+  # year, and wy
+  distinct(month, year, prcp, site_full) |> 
+  # grouping by month and year
+  group_by(month, year) |> 
+  # calculating the sum of prcp per month (not per site as it is a weather 
+  # event and not site specific)
+  summarise(sum_prcp = sum(prcp, na.rm = TRUE)) |> 
+  # ungrouping
+  ungroup() |> 
+  # creating a date column to be read as a date
+  mutate(date = lubridate::make_date(.data$year, .data$month, 1)) |> 
+  # creating levels to `month`, putting them in a logical order
+  mutate(month = factor(month,
+                        levels = 1:12,
+                        labels = c("Jan", "Feb", "Mar", "Apr", "May", "Jun", 
+                                   "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"),
+                        ordered = TRUE))
+
+salinity_filtered <- water_quality_weather |> 
+  # keeping only elevation codes 0, 1, and 2
+  filter(elevation_code %in% c("0", "1", "2")) |> 
+  # filtering the column global_id to exclude the values that match those
+  # in `salinity_outlier_ids`
+  filter(!global_id %in% salinity_outlier_ids) |> 
+  # dropping the column for other_site_names
+  select(!other_site_name) |> 
+  # get rid of site names w/ "other"
+  filter(!site_name == "other") |> 
+  # setting the order of the levels (from lowest to highest avg salinity
+  # value)
+  # helps the order of the visualizations
+  mutate(site_full = fct_relevel(site_full, 
+                                 "Phelps Bridge", 
+                                 "East Channel", 
+                                 "Venoco Bridge")) |> 
+  # taking out sites w/ NA
+  filter(!site_full == "NA") |>
+  # keeping only columns of interest (to reduce confusion)
+  select(site_full, water_surface_elevation, elevation_code, salinity_ppt, 
+         temperature_c, month, year, wy) |> 
+  # creating levels to `month`, putting them in a logical order
+  mutate(month = factor(month,
+                        levels = 1:12,
+                        labels = c("Jan", "Feb", "Mar", "Apr", "May",
+                                   "Jun", "Jul", "Aug", "Sep", "Oct",
+                                   "Nov", "Dec"),
+                        ordered = TRUE)) |> 
+  # group by site full, month, and year
+  group_by(site_full, month, year) |> 
+  # calculate mean salinity (per site per month))
+  summarize(mean_salinity = mean(salinity_ppt, na.rm = TRUE),
+          # calculating mean temperature (in f) 
+           mean_temp_f = (mean(temperature_c, na.rm = TRUE) * 9/5) + 32,
+          .groups = "drop")
+
+# creating new object ~salinity_prcp` 
+salinity_prcp <- salinity_filtered |> 
+  # joining `monthly_prcp` to `salinity_filtered` by the columns 
+  # month and year
+  left_join(monthly_prcp, by = c("month", "year"))
+
+# create new object `exploratory_salinity` from `water_quality_weather`
+exploratory_salinity <- water_quality_weather |> 
+  # only keep elevation codes 0, 1, 2, and 3 (keeping 
+  # three just for visualization)
+  filter(elevation_code %in% c("0", "1", "2", "3")) |> 
+  # filtering the column global_id to exclude the values that match
+  #  those in `salinity_outlier_ids`
+  filter(!global_id %in% salinity_outlier_ids) |> 
+  # dropping the column `other_site_names`
+  select(!other_site_name) |> 
+  # filterign out site names that match "other"
+  filter(!site_name == "other") |> 
+  # setting the order of the levels (from lowest to highest avg
+  # salinity value)
+  # helps the order of the visualizations
+  mutate(site_full = fct_relevel(site_full, 
+                                 "Phelps Bridge", 
+                                 "East Channel", 
+                                 "Venoco Bridge")) |> 
+  # taking out sites w/ NA
+  filter(!site_full == "NA") |>
+  # keeping only columns of interest (to reduce confusion)
+  select(site_full, water_surface_elevation, elevation_code, salinity_ppt, 
+         temperature_c, month, year) |>
+  # group by site, elevation code, month, and year
+  group_by(site_full, elevation_code, month, year) |> 
+  # calculate mean salinity
+  summarize(mean_salinity = mean(salinity_ppt, na.rm = TRUE),
+            .groups = "drop") |> 
+  # creating levels to `month`, putting them in a logical order
+  mutate(month = factor(month,
+                        levels = 1:12,
+                        labels = c("Jan", "Feb", "Mar", "Apr", "May",
+                                   "Jun", "Jul", "Aug", "Sep", "Oct",
+                                   "Nov", "Dec"),
+                        ordered = TRUE))
+
+# create a new object `monthly_surface_elv` from `water_quality_weather`
+monthly_surfcae_elv <- water_quality_weather |> 
+  # only include elevation codes 0, 1, and 2
+  filter(elevation_code %in% c("0", "1", "2")) |> 
+  # Filter out site names matchign to "other"
+  filter(!site_name == "other") |>  
+  # group by site, month, and year
+  group_by(site_full, month, year) |> 
+  # calculate mean water surface elevation
+  summarise(avg_elv = mean(water_surface_elevation, na.rm = TRUE)) |> 
+  # ungroup data frame
+  ungroup() |> 
+  # create a date column to be read as a date
+  mutate(date = lubridate::make_date(.data$year, .data$month, 1)) |> 
+  # creating levels to `month`, putting them in a logical order
+  mutate(month = factor(month,
+                        levels = 1:12,
+                        labels = c("Jan", "Feb", "Mar", "Apr", "May",
+                                   "Jun", "Jul", "Aug", "Sep", "Oct",
+                                   "Nov", "Dec"),
+                        ordered = TRUE))
+
+## Joining data frames 
+elv_viz <- monthly_surfcae_elv |> 
+  # joining by columns month, year, and site
+  left_join(salinity_prcp,  by = c("month", "year", "site_full")) |> 
+  # filtering out all NA average elevation values
+  filter(!avg_elv == "NaN")
+
+# creating a new object `precipitation_peaks` from `monthly_prcp`
+precipitation_peaks <- monthly_prcp |>
+  # including the dates of the top 4 monthly precipitation
+  filter(date %in% c("2023-03-01", 
+                     "2021-01-01", 
+                     "2023-02-01", 
+                     "2021-10-01")) |> 
+  # ungrouping data frame
+  ungroup() |> 
+  # keeping these 4 distinct dates
+  distinct(date, .keep_all = TRUE) |>
+  # adding a label to each event
+  mutate(label = c("Rain Event (6.05 in)",
+                   "Rain Event (5.40 in)",  
+                   "Rain Event (6.18 in)",  
+                   "Rain Event (3.45 in)"),
+         # setting the y position for each event
+         label_y = c(6.5, 6.5, 8, 6.25)) |> 
+  # sort chronologically (better legend appearance)
+  arrange(date) |>                             
+  # lock levels in that order
+  mutate(label = factor(label, levels = label)) 
+
+
+# creating a new object `precipitation_peaks_facet` from `precipitation_peaks`
+precipitation_peaks_facet <- precipitation_peaks |>
+  # duplicating all 4 peaks across each unique site in salinity_prcp
+  cross_join(tibble(site_full = unique(salinity_prcp$site_full))) |> 
+  # assigning y position for each peak label by date
+  mutate(label_y_2 = case_when(
+    # y position for January 2021 rain event
+    date == "2021-01-01" ~ 40,
+    # y position for February 2023 rain event
+    date == "2023-02-01" ~ 35,
+    # y position for March 2023 rain event
+    date == "2023-03-01" ~ 45,
+    # y position for October 2021 rain event
+    date == "2021-10-01" ~ 50))
+
+
+
+```
+
 
 
 
@@ -20,6 +365,120 @@ execute:
 
 
 # Results
+
+```{r}
+#| fig-height: 10
+#| fig-width: 10
+
+# Top half of Figure 1
+# base layer: ggplot
+# data: salinity_prcp
+prcp_plot <- ggplot(data = monthly_prcp,
+       # x axis: date
+       mapping = aes(x = date,
+                     # y axis: monthly precipitation sum
+                     y = sum_prcp)) +
+  # prcp displayed by columns
+  geom_col(color = "darkblue") +
+  # adding themeing 
+  theme_bw() +
+  # x-axis breaks every 6 months (to reduce cognitive load)
+  # Format date axis labels as abbreviated month and full year
+  scale_x_date(date_breaks = "6 months", date_labels = "%b %Y") +
+  # angling labels to 45 degrees and to be right-aligned
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  # expanding limits to make room for text
+  scale_y_continuous(limits = c(0, 8)) + 
+  # labeling x and y axes
+  labs(x = "Date",
+       y = "Total Monthly Precipitation (in)",
+       # adding title
+       title = "Total Monthly Precipitation at NCOS") + 
+  # removing legend, redundant
+  theme(legend.position = "none") +
+  # adding in lines for prcp events
+  geom_vline(data = precipitation_peaks,
+             # centering them on dates
+             aes(xintercept = date,
+                 # coloring them by their established label
+                 color = label),
+             # signified by dotted lines
+             linetype = "dotted",
+             # width of lines
+             linewidth = 1.2) +
+  # adding custom color palette
+  scale_color_manual(values = wes_palette("AsteroidCity1")) +
+  # removing space between data and x-axis
+  scale_y_continuous(expand = c(0,0.1)) +
+  # adding labels to each dotted line from the `precipitation_peaks` object
+  geom_text(data = precipitation_peaks,
+            # x-axis location: date
+            # y-axis location: set y value from earlier chunk
+            # label = the defined label from earlier chunk
+            # colro by label
+            aes(x = date, y = label_y, label = label, color = label),
+            # 45 degree angle for readability
+            angle = 45,
+            # slightly to right of vertical dotted line
+            hjust = 1.1,
+            # text sixe
+            size = 3,
+            # text bolding
+            fontface = "bold")
+
+# Bottom half of Figure1
+# base layer ggplot
+# data: salinity_prcp
+salinity_plot <- ggplot(data = salinity_prcp,
+       # x-axis: date
+       mapping = aes(x = date,
+                     # y-axis: mean_salinity
+                     y = mean_salinity)) +
+  # column displaying mean salinity
+  geom_col(color = "grey") +
+  # separating points from sites into different plots
+  facet_wrap(~ site_full) +
+  # adding themeing
+  theme_bw() +
+  # x breaks by year to reduce cognitive load, labeling by 
+  # abbreviated month and full year
+  scale_x_date(date_breaks = "12 months", date_labels = "%b %Y") +
+  # angling x axis labels to 45 degrees and to be right-aligned
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) + 
+  # labeling x and y axes
+  labs(x = "Date",
+       y = "Monthly Average Salinity (ppt)",
+       # adding title
+       title = "Monthly Average NCOS Salinity w/ Precipitation Peaks",
+       # adding legend title
+       color = "Precipitation Events (in)") +
+  # adding lines from the `precipitation_peaks_facet` object
+  geom_vline(data = precipitation_peaks_facet,
+             # oriented on the date
+             aes(xintercept = date,
+                 # different colors by label
+                 color = label),
+             # long dash for better viz
+             linetype = "longdash",
+             # line width
+             linewidth = 0.75) +
+  # custom colors
+  scale_color_manual(values = wes_palette("AsteroidCity1")) +
+  # removing space between data and x-axis
+  scale_y_continuous(expand = c(0,0.1),
+                     # defining vertical limit
+                     limits = c(0, 65)) +
+  # taking out legend (redundant when stacked)
+  theme(legend.position = "none")
+
+# Stacking plots
+prcp_plot / salinity_plot +
+  plot_annotation(title = "Figure 1. Precipitation Peaks at NCOS Overlaid on Monthly Average Salinity",
+                  theme = theme(plot.title = element_text(face = "bold")))
+```
+
+_Figure 1. On the top, the total monthly precipitation 
+
 
 
 # Discussion
