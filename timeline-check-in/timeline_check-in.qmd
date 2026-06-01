@@ -1,9 +1,11 @@
 ---
-title: "Timeline Check-in"
+title: "Timeline Check-in - w/ Revisions"
 author: "Madeline, Audrey, Maisie"
-format: html
-toc: true
-date: "2026-05-22"
+format: pdf
+date: "2026-05-27"
+execute: 
+  message: false
+  warning: false
 ---
 
 # 1. Set up
@@ -41,6 +43,9 @@ library(wesanderson)
 # Use ragg_png device for better font rendering and system font support
 knitr::opts_chunk$set(dev = "ragg_png")
 
+# to stack plots
+library(patchwork)
+
 ```
 
 ## Data 
@@ -68,19 +73,22 @@ water_parameters <- read_csv(here("data", "YSI_Data_Begin_1.csv"))
 weather_clean <- weather |> 
   # made column names all lowercase
   clean_names() |> 
-  # puts date in proper format and makes sure its understood as date (not as chr)
+  # puts date in proper format and makes sure its understood as 
+  # date (not as chr)
   mutate(date = mdy(date)) |> 
   # keeping only these 4 columns of interest
   select(date, prcp, tmax, tmin) |> 
   # creating new columns for month and year
-  # extracting month from the date (needs to be in the standard date format for this function to work)
+  # extracting month from the date (needs to be in the standard date format 
+  # for this function to work)
   mutate(month = month(date),
          year = year(date)) |> 
   mutate(wy = case_when(
     # when month os october or later, assign a value of year +1
     # in the water ywar for next year
     month >= 10 ~ year + 1,
-    # keeping all months < 10 the same (sept or earlier), assigning value of existing year
+    # keeping all months < 10 the same (sept or earlier), assigning value
+    # of existing year
     .default = year
     ))
 
@@ -127,7 +135,8 @@ water_parameters_clean <- water_parameters |>
   select(!c(creator, editor)) |> 
   # renaming depth code to be elevation code to better represent methodology
   rename(elevation_code = depth_code) |> 
-  ## Everything below came from visualizing the data first and defining what to fix/add
+  ## Everything below came from visualizing the data first and defining what 
+  ## to fix/add
   # fixing a mistake in the data
   mutate(elevation_code = case_when(
     # anytime theres a 10 in elevation code, replace it with a 1
@@ -155,15 +164,19 @@ water_quality <- full_join(
   x = metadata_clean,
   # right data frame
   y = water_parameters_clean,
-  # name the columns in each df that you want to join by (naming the shared column)
+  # name the columns in each df that you want to join by 
+  # (naming the shared column)
   by = c("global_id" = "parent_global_id")) |> 
   select(
     # information about the observation
-    global_id, monitoring_datetime, time_of_wq_measurement, monitor_name, weather, site_name, other_site_name, site_full, x, y,
+    global_id, monitoring_datetime, time_of_wq_measurement, monitor_name,
+    weather, 
+    site_name, other_site_name, site_full, x, y,
     # water information
     water_surface_elevation, flow, notes,
     #measurement information
-    elevation_code, do_mg_l, do_percent_sat, conductivity_u_s_cm, salinity_ppt, temperature_c
+    elevation_code, do_mg_l, do_percent_sat, conductivity_u_s_cm,
+    salinity_ppt, temperature_c
   ) |> 
   # taking the date out of this column, dont want the time
   mutate(date = date(monitoring_datetime)) |> 
@@ -211,11 +224,13 @@ monthly_prcp <- water_quality_weather |>
   filter(elevation_code %in% c("0", "1", "2")) |> 
   # get rid of site names w/ "other"
   filter(!site_full == "NA") |> 
-  # removing any duplicate rows based on the combination of month, year, and wy
-  distinct(month, year, prcp) |> 
+  # removing any duplicate rows based on the combination of month, 
+  # year, and wy
+  distinct(month, year, prcp, site_full) |> 
   # grouping by month and year
   group_by(month, year) |> 
-  # calculating the sum of prcp per month (not per site as it is a weather event and not site specific)
+  # calculating the sum of prcp per month (not per site as it is a weather 
+  # event and not site specific)
   summarise(sum_prcp = sum(prcp, na.rm = TRUE)) |> 
   # ungrouping
   ungroup() |> 
@@ -224,7 +239,8 @@ monthly_prcp <- water_quality_weather |>
   # creating levels to `month`, putting them in a logical order
   mutate(month = factor(month,
                         levels = 1:12,
-                        labels = c("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"),
+                        labels = c("Jan", "Feb", "Mar", "Apr", "May", "Jun", 
+                                   "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"),
                         ordered = TRUE))
 
 ```
@@ -236,37 +252,49 @@ monthly_prcp <- water_quality_weather |>
 salinity_filtered <- water_quality_weather |> 
   # keeping only elevation codes 0, 1, and 2
   filter(elevation_code %in% c("0", "1", "2")) |> 
-  # filtering the column global_id to exclude the values that match those in `salinity_outlier_ids`
+  # filtering the column global_id to exclude the values that match those
+  # in `salinity_outlier_ids`
   filter(!global_id %in% salinity_outlier_ids) |> 
   # dropping the column for other_site_names
   select(!other_site_name) |> 
   # get rid of site names w/ "other"
   filter(!site_name == "other") |> 
-  # setting the order of the levels (from lowest tp highest avg salinity value)
+  # setting the order of the levels (from lowest to highest avg salinity
+  # value)
   # helps the order of the visualizations
   mutate(site_full = fct_relevel(site_full, 
-                                 "Phelps Bridge", "East Channel", "Venoco Bridge")) |> 
+                                 "Phelps Bridge", 
+                                 "East Channel", 
+                                 "Venoco Bridge")) |> 
   # taking out sites w/ NA
   filter(!site_full == "NA") |>
   # keeping only columns of interest (to reduce confusion)
-  select(site_full, water_surface_elevation, elevation_code, salinity_ppt, temperature_c, month, year, wy) |> 
+  select(site_full, water_surface_elevation, elevation_code, salinity_ppt, 
+         temperature_c, month, year, wy) |> 
   # creating levels to `month`, putting them in a logical order
   mutate(month = factor(month,
                         levels = 1:12,
-                        labels = c("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"),
+                        labels = c("Jan", "Feb", "Mar", "Apr", "May",
+                                   "Jun", "Jul", "Aug", "Sep", "Oct",
+                                   "Nov", "Dec"),
                         ordered = TRUE)) |> 
   # group by site full, month, and year
   group_by(site_full, month, year) |> 
   # calculate mean salinity (per site per month))
   summarize(mean_salinity = mean(salinity_ppt, na.rm = TRUE),
-            .groups = "drop")
+          # calculating mean temperature (in f) 
+           mean_temp_f = (mean(temperature_c, na.rm = TRUE) * 9/5) + 32,
+          .groups = "drop")
 ```
 
 ### Joining Monthly_prcp and Salinity_filtered
 ```{r}
 #| label: joining-prcp
 
+# creating new object ~salinity_prcp` 
 salinity_prcp <- salinity_filtered |> 
+  # joining `monthly_prcp` to `salinity_filtered` by the columns 
+  # month and year
   left_join(monthly_prcp, by = c("month", "year"))
 ```
 
@@ -278,22 +306,28 @@ salinity_prcp <- salinity_filtered |>
 
 # create new object `exploratory_salinity` from `water_quality_weather`
 exploratory_salinity <- water_quality_weather |> 
-  # only keep elevation codes 0, 1, 2, and 3 (keeping three just for visualization)
+  # only keep elevation codes 0, 1, 2, and 3 (keeping 
+  # three just for visualization)
   filter(elevation_code %in% c("0", "1", "2", "3")) |> 
-  # filtering the column global_id to exclude the values that match those in `salinity_outlier_ids`
+  # filtering the column global_id to exclude the values that match
+  #  those in `salinity_outlier_ids`
   filter(!global_id %in% salinity_outlier_ids) |> 
   # dropping the column `other_site_names`
   select(!other_site_name) |> 
   # filterign out site names that match "other"
   filter(!site_name == "other") |> 
-  # setting the order of the levels (from lowest tp highest avg salinity value)
+  # setting the order of the levels (from lowest to highest avg
+  # salinity value)
   # helps the order of the visualizations
   mutate(site_full = fct_relevel(site_full, 
-                                 "Phelps Bridge", "East Channel", "Venoco Bridge")) |> 
+                                 "Phelps Bridge", 
+                                 "East Channel", 
+                                 "Venoco Bridge")) |> 
   # taking out sites w/ NA
   filter(!site_full == "NA") |>
   # keeping only columns of interest (to reduce confusion)
-  select(site_full, water_surface_elevation, elevation_code, salinity_ppt, temperature_c, month, year) |>
+  select(site_full, water_surface_elevation, elevation_code, salinity_ppt, 
+         temperature_c, month, year) |>
   # group by site, elevation code, month, and year
   group_by(site_full, elevation_code, month, year) |> 
   # calculate mean salinity
@@ -302,7 +336,9 @@ exploratory_salinity <- water_quality_weather |>
   # creating levels to `month`, putting them in a logical order
   mutate(month = factor(month,
                         levels = 1:12,
-                        labels = c("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"),
+                        labels = c("Jan", "Feb", "Mar", "Apr", "May",
+                                   "Jun", "Jul", "Aug", "Sep", "Oct",
+                                   "Nov", "Dec"),
                         ordered = TRUE))
 ```
 
@@ -327,7 +363,9 @@ monthly_surfcae_elv <- water_quality_weather |>
   # creating levels to `month`, putting them in a logical order
   mutate(month = factor(month,
                         levels = 1:12,
-                        labels = c("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"),
+                        labels = c("Jan", "Feb", "Mar", "Apr", "May",
+                                   "Jun", "Jul", "Aug", "Sep", "Oct",
+                                   "Nov", "Dec"),
                         ordered = TRUE))
 
 ## Joining data frames 
@@ -342,26 +380,50 @@ elv_viz <- monthly_surfcae_elv |>
 ```{r}
 #| label: prcp-peaks
 
-# creating a new object `precipitation_peaks` from `salinity_prcp`
-precipitation_peaks <- salinity_prcp |>
+# creating a new object `precipitation_peaks` from `monthly_prcp`
+precipitation_peaks <- monthly_prcp |>
   # including the dates of the top 4 monthly precipitation
-  filter(date %in% c("2021-01-01", "2023-03-01", "2023-02-01", "2021-10-01")) |> 
+  filter(date %in% c("2023-03-01", 
+                     "2021-01-01", 
+                     "2023-02-01", 
+                     "2021-10-01")) |> 
   # ungrouping data frame
   ungroup() |> 
   # keeping these 4 distinct dates
   distinct(date, .keep_all = TRUE) |>
   # adding a label to each event
-  mutate(label = c("Rain Event (5.19 in)", "Rain Event (2.06 in)", "Rain Event (1.80 in)", "Rain Event (1.15 in)"),
-         # setting the y position for each event (dropping the 1.80 event lower for better visualization)
-         label_y = c(4.5, 4.5, 3.5, 4.5))
+  mutate(label = c("Rain Event (6.05 in)",
+                   "Rain Event (5.40 in)",  
+                   "Rain Event (6.18 in)",  
+                   "Rain Event (3.45 in)"),
+         # setting the y position for each event
+         label_y = c(6.5, 6.5, 8, 6.25)) |> 
+  # sort chronologically (better legend appearance)
+  arrange(date) |>                             
+  # lock levels in that order
+  mutate(label = factor(label, levels = label)) 
 
+
+# creating a new object `precipitation_peaks_facet` from `precipitation_peaks`
 precipitation_peaks_facet <- precipitation_peaks |>
+  # duplicating all 4 peaks across each unique site in salinity_prcp
   cross_join(tibble(site_full = unique(salinity_prcp$site_full))) |> 
-  mutate(label_y_2 = rep(c(40, 45, 40, 50), times = 3))
+  # assigning y position for each peak label by date
+  mutate(label_y_2 = case_when(
+    # y position for January 2021 rain event
+    date == "2021-01-01" ~ 40,
+    # y position for February 2023 rain event
+    date == "2023-02-01" ~ 35,
+    # y position for March 2023 rain event
+    date == "2023-03-01" ~ 45,
+    # y position for October 2021 rain event
+    date == "2021-10-01" ~ 50))
+           
+
 
 ```
 
-\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+
 
 # 2. Ideas for analysis and background
 
@@ -387,27 +449,28 @@ We also chose to use Spearman’s correlation coefficient to test whether salini
 
 The test gave a coefficient value of 0.0166 and p-value of  0.8251, suggesting that precipitation alone does not strongly explain salinity.
 
-\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+
 
 # 3. Visualizations directly relevant to answering questions
 
 ## Figures
 
-### Figure 1. - Monthly Precipitation at NCOS (Time Series w/ Rain Event Lines)
+### Figure 1. - Precipitation and Salinity Through Time
 
 ```{r}
 #| label: viz1
-#| fig-height: 6
-#| fig-width: 8
+#| fig-height: 10
+#| fig-width: 10
 
+# Top half of Figure 1
 # base layer: ggplot
 # data: salinity_prcp
-ggplot(data = salinity_prcp,
+prcp_plot <- ggplot(data = monthly_prcp,
        # x axis: date
        mapping = aes(x = date,
                      # y axis: monthly precipitation sum
                      y = sum_prcp)) +
-  # prcp displayed by columns (a suggestion made by An after work plan/proposal edits)
+  # prcp displayed by columns
   geom_col(color = "darkblue") +
   # adding themeing 
   theme_bw() +
@@ -417,10 +480,10 @@ ggplot(data = salinity_prcp,
   # angling labels to 45 degrees and to be right-aligned
   theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
   # expanding limits to make room for text
-  scale_y_continuous(limits = c(0, 6)) + 
+  scale_y_continuous(limits = c(0, 8)) + 
   # labeling x and y axes
   labs(x = "Date",
-       y = "Total Monthly Precipitation",
+       y = "Total Monthly Precipitation (in)",
        # adding title
        title = "Total Monthly Precipitation at NCOS") + 
   # removing legend, redundant
@@ -434,9 +497,11 @@ ggplot(data = salinity_prcp,
              # signified by dotted lines
              linetype = "dotted",
              # width of lines
-             linewidth = 1.25) +
+             linewidth = 1.2) +
   # adding custom color palette
   scale_color_manual(values = wes_palette("AsteroidCity1")) +
+  # removing space between data and x-axis
+  scale_y_continuous(expand = c(0,0.1)) +
   # adding labels to each dotted line from the `precipitation_peaks` object
   geom_text(data = precipitation_peaks,
             # x-axis location: date
@@ -447,26 +512,16 @@ ggplot(data = salinity_prcp,
             # 45 degree angle for readability
             angle = 45,
             # slightly to right of vertical dotted line
-            hjust = -0.1,
+            hjust = 1.1,
             # text sixe
             size = 3,
             # text bolding
             fontface = "bold")
- 
 
-```
-
-### Figure 2. Salinity Time Series w/ Prcp Highlights
-
-```{r}
-#| label: salinity-w-rain-events
-#| fig-height: 6
-#| fig-width: 8
-
-
+# Bottom half of Figure1
 # base layer ggplot
 # data: salinity_prcp
-ggplot(data = salinity_prcp,
+salinity_plot <- ggplot(data = salinity_prcp,
        # x-axis: date
        mapping = aes(x = date,
                      # y-axis: mean_salinity
@@ -477,7 +532,8 @@ ggplot(data = salinity_prcp,
   facet_wrap(~ site_full) +
   # adding themeing
   theme_bw() +
-  # x breaks by year to reduce cognitive load, labeling by abbreviated month and full year
+  # x breaks by year to reduce cognitive load, labeling by 
+  # abbreviated month and full year
   scale_x_date(date_breaks = "12 months", date_labels = "%b %Y") +
   # angling x axis labels to 45 degrees and to be right-aligned
   theme(axis.text.x = element_text(angle = 45, hjust = 1)) + 
@@ -485,9 +541,9 @@ ggplot(data = salinity_prcp,
   labs(x = "Date",
        y = "Monthly Average Salinity (ppt)",
        # adding title
-       title = "Monthly Average NCOS Salinity",
+       title = "Monthly Average NCOS Salinity w/ Precipitation Peaks",
        # adding legend title
-       color = "Precipitation Events") +
+       color = "Precipitation Events (in)") +
   # adding lines from the `precipitation_peaks_facet` object
   geom_vline(data = precipitation_peaks_facet,
              # oriented on the date
@@ -500,95 +556,188 @@ ggplot(data = salinity_prcp,
              linewidth = 0.75) +
   # custom colors
   scale_color_manual(values = wes_palette("AsteroidCity1")) +
-  # legend at bottom for less visual clutter
-  theme(legend.position = "bottom")
- 
+  # removing space between data and x-axis
+  scale_y_continuous(expand = c(0,0.1),
+                     # defining vertical limit
+                     limits = c(0, 65)) +
+  # taking out legend (redundant when stacked)
+  theme(legend.position = "none")
+
+# Stacking plots
+prcp_plot / salinity_plot
+
 
 ```
 
-### Figure 3. - How Salinity Relates to Water Surface Elevation (Venoco Bridge)
+
+### Figure 2. - How Salinity Relates to Water Surface Elevation (Venoco Bridge)
 ```{r}
 #| label: viz2
 #| fig-height: 6
 #| fig-width: 8
 
+# base layer ggplot
+# data: elevation visualization
 ggplot(data = elv_viz,
+       # x: average elevation
        mapping = aes(x = avg_elv,
+                     # y: mean salinity
                      y = mean_salinity)) +
+  # data shown by points
   geom_point(color = "maroon") +
+  # each site gets own plot
   facet_wrap(~ site_full) +
+  # custom color palette
   scale_color_manual(values = wes_palette("GrandBudapest1")) +
+  # adding in themeing
   theme_bw() +
+  # removing space between data and x-axis
+  scale_y_continuous(expand = c(0,0.3)) +
+  # labeling x and y axes 
   labs(x = "Monthly Average Water Surface Elevation (m)",
        y = "Monthly Average Salinity (ppt)",
-       title = "Figure 2. How Salinity Relates to Water Surface Elevation (Venoco Bridge)") 
+       # adding title
+       title = "Figure 2. How Salinity Relates to Water Surface 
+Elevation (Venoco Bridge)") 
 
 
 ```
 
-### Figure 4. - How Salinity Varies Between Elevation Codes
+### Figure 3. - How Temperature Relates to Salinity Across NCOS Sites
 ```{r}
-#| label: viz3
+#| fig-height: 6
+#| fig-width: 8
 
-ggplot(data = exploratory_salinity,
-       mapping = aes(x = elevation_code,
-                     y = mean_salinity)) +
-  geom_point(shape = 21) +
-  stat_summary(fun = median,
-               geom = "point",
-               color = "maroon") +
-  stat_summary(fun = median,
-               geom = "line",
-               color = "maroon",
-               group = 1) +
-  labs(x = "Elevation Code",
-       y = "Mean Salinity",
-       title = "Figure 3. Mean Salinity Differences Between Elevation Codes") +
+# base layer: ggplot
+# data: salinity_prcp
+ggplot(data = salinity_prcp,
+       # x axis: monthly average temperature in fahrenheit
+       # y axis: monthly average salinity
+       # color by site
+       mapping = aes(x = mean_temp_f,
+                     y = mean_salinity,
+                     color = site_full)) +
+  # data represented by points
+  geom_point() +
+  # each site gets its own plot
   facet_wrap(~ site_full) +
+  # custom color palette
+  scale_color_manual(values = wes_palette("Royal2")) +
+  # removing space between data and x axis
+  scale_y_continuous(expand = c(0, 0.2)) +
+  # adding theming
   theme_bw() +
-  scale_x_discrete(breaks = c(0,1, 2, 3)) +
-  scale_y_continuous(position = "right") +
-  coord_flip()
+  # removing legend (redundant with facet labels)
+  theme(legend.position = "none") +
+  # labeling axes and title
+  labs(x = "Monthly Average Temperature (°F)",
+       y = "Monthly Average Salinity (ppt)",
+       title = "Figure 3. How Temperature Relates to Salinity Across NCOS Sites")
 
 
 ```
 
-### Figure 5. - How Precipitation Explains Salinity
+
+
+### Figure 4. - How Precipitation Explains Salinity
 ```{r}
 #| label: viz4
 #| fig-height: 6
 #| fig-width: 8
 
+# base layer: ggplot
+# data: `salinity_prcp`
 ggplot(data = salinity_prcp,
+       # x: sum precipitation
        mapping = aes(x = sum_prcp,
+                     # y: mean salinity
                      y = mean_salinity,
+                     # each site own color
                      color = site_full)) +
+  # data represented by points
   geom_point() +
+  # each site has own plot
   facet_wrap(~ site_full) +
+  # custom color palette
   scale_color_manual(values = wes_palette("Royal2")) +
+  # removing space between data and x axis
+  scale_y_continuous(expand = c(0,0.1)) +
+  # removing space between data and y axis
+  scale_x_continuous(expand = c(0, 0.1)) +
+  # custom themeing
   theme_bw() +
-  labs(x = "Monthly Precipitation (Total)",
+  # removing legend (redundant)
+  theme(legend.position = "none") +
+  # labeling x and y axes
+  labs(x = "Monthly Precipitation (in)",
        y = "Monthly Average Salinity (ppt)",
-       title = "Figure 4. How Precipitation Explains Salinity",
-       color = "Site")
+       # adding figure title
+       title = "Figure 4. How Precipitation Relates to Salinity Across NCOS Sites")
 
 ```
 
 ## Correlation Test
 
-### Calculating Spearman's Correlation
+### Correlation Test 1: Calculating Spearman's Correlation (salinity/water surface elevation)
 ```{r}
+#| label: cor-test-1
 
-cor.test(salinity_prcp$mean_salinity, 
-         salinity_prcp$sum_prcp, 
+# First variable: mean salinity column from the elevation 
+# visualization dataframe
+cor.test(elv_viz$mean_salinity,
+         # second variable: average water surface elevation from the
+         # elevation visualization dataframe
+         elv_viz$avg_elv,
+         # uses Spearman's rank correlation
+         method = "spearman")
+
+```
+
+### Correlation Test 2: Calculating Spearman's Correlation (salinity/temperature)
+```{r}
+#| label: cor-test-2
+
+# First variable: mean salinity column from the salinity_prcp dataframe
+cor.test(salinity_prcp$mean_salinity,
+         # Second variable: mean temperature in degree F from the same
+         #data frame
+         salinity_prcp$mean_temp_f,
+         # using Spearman's rank correlation
          method = "spearman")
 
 ```
 
 
+### Correlation Test 3: Calculating Spearman's Correlation (salinity/precipitation)
+```{r}
+#| label: cor-test-3
+
+# First variable: mean salinity column from the salinity_prcp dataframe
+cor.test(salinity_prcp$mean_salinity, 
+         # Second variable: sum precipitation column from the same dataframe
+         salinity_prcp$sum_prcp, 
+         # Uses Spearman's rank correlation
+         method = "spearman")
+
+```
+
+
+
 ### Interpreting the Results
 
-A Spearman's rank correlation was conducted to examine the relationship between monthly precipitation and monthly average salinity. Results indicated no statistically significant relationship between the two variables (rho = 0.017, S = 939,961, p = 0.825). The near-zero rho suggests that monthly precipitation has negligible association with average salinity at this scale. It should be noted that exact p-values could not be computed due to ties in the data, so a normal approximation was used; this does not meaningfully affect the interpretation. These results may reflect lag effects between precipitation events and salinity response, spatial or hydrological disconnect between measurement sites, or the influence of other drivers, such as evaporation or tidal exchange, that operate independently of local precipitation.
+Three Spearman's rank correlation tests were conducted to examine relationships between monthly average salinity and three environmental variables: water surface elevation, temperature, and precipitation. In all three tests, exact p-values could not be computed due to ties in the data, so normal approximations were used; this does not meaningfully affect interpretation.
+
+#### Correlation Test 1. 
+Results indicated no statistically significant relationship between monthly average water surface elevation and salinity (rho = 0.228, S = 30,660, p = 0.075). While the p-value narrowly exceeds the 0.05 threshold, the moderate positive rho suggests a weak tendency for salinity to increase with rising water levels, which may reflect tidal dynamics or saltwater intrusion and warrants further investigation with a larger sample.
+
+#### Correlation Test 2.
+Results indicated no statistically significant relationship between monthly average temperature and salinity (rho = 0.032, S = 924,842, p = 0.666). The near-zero rho suggests temperature has negligible direct association with salinity at this scale, though indirect effects through processes such as evaporation may not be captured at this temporal resolution.
+
+#### Correlation Test 3. 
+Results indicated no statistically significant relationship between monthly precipitation and salinity (rho = 0.024, S = 932,653, p = 0.746). The near-zero rho suggests precipitation has negligible association with salinity at this scale, which may reflect lag effects between precipitation events and salinity response, or the influence of other drivers such as tidal exchange operating independently of local precipitation.
+
+#### Overal Interpretation
+Taken together, the results of all three correlation tests suggest that no single environmental variable meaningfully predicts monthly average salinity at NCOS at this scale. This is likely a reflection of the inherent complexity of salinity dynamics in coastal wetland systems, where salinity is shaped by the simultaneous interaction of multiple physical, hydrological, and biological processes. Tidal exchange, freshwater input from precipitation and groundwater, evaporation, seasonal temperature fluctuations, water surface elevation, and site-specific channel geometry all influence salinity in ways that are deeply interconnected and often operate on different timescales.
 
 
 # 4. Other exploratory visualizations
@@ -601,63 +750,34 @@ A Spearman's rank correlation was conducted to examine the relationship between 
 #| fig-height: 6
 #| fig-width: 8
 
-# Plot
-salinity_prcp |> 
-  ggplot( aes(x= site_full, y=mean_salinity, fill = site_full)) +
-    geom_boxplot(color = "brown") +
-    scale_fill_viridis(discrete = TRUE, alpha=0.6) +
-    geom_jitter(color="brown", size=0.4, alpha=0.9) +
-    theme_ipsum() +
-    theme(
-      legend.position="none",
-      plot.title = element_text(size=11)
-    ) +
-    ggtitle("Distribution of Mean Salinity Values Across Sites") +
-    xlab("Site") + 
-  ylab("Mean Salinity (ppt)")
+  # base layer: ggplot
+  # data: salinity~prcp
+  ggplot(data = salinity_prcp,
+         # x: site name, y: mean salinity, coloring in by site
+         aes(x= site_full, y=mean_salinity, fill = site_full)) +
+  # boxplot to display data  
+  geom_boxplot(color = "black") +
+  # adding jitter to points for better visualization
+  geom_jitter(color="black", size=0.4, alpha=0.9, height = 0) +
+  # custom coloring and a 0.6 transparency to visualize data points
+  scale_fill_manual(values = alpha(wes_palette("GrandBudapest1"), 0.6)) +
+  # removing space between data and x axis
+  scale_y_continuous(expand = c(0, 0.1)) +
+  # adding in a theme
+  theme_bw() +
+  # taking out legend
+  theme(legend.position="none") +
+  # labeling x and y axes
+  labs(x = "Site",
+       y = "Mean Salinity (ppt)",
+       # adding in a title
+       title = "Distribution of Mean Salinity Values Across Sites")
 
 
 ```
 
 - The addition of this plot was taken as a suggestion made by An after reviewing our Work Plan/Project Proposal. This figure aims to demonstrate that not only dooes the elevation code of a site yield a difference in monthly mean salinity (as seen in figure 3), but also that the three NCOS sites also differ in their overall monthly mean salinity values. This plot sets the basic understanding of salinity variety across sites while also adding context to one of the visualizations directly answering our question. 
 
-
-### Strip Chart w/ Standard Deviation - How Mean Salinity Differs Between Sites
-```{r}
-#| label: strip-chart-std-dev
-#| fig-height: 6
-#| fig-width: 8
-
-ggplot(data = salinity_prcp,
-       mapping = aes(x = site_full,
-                     y = mean_salinity)) +
-  geom_jitter(shape = 21) +
-  stat_summary(fun = mean, geom = "point", size = 3, color = "turquoise") +
-  stat_summary(fun.data = mean_sdl, fun.args = list(mult = 1), geom = "errorbar", width = 0.2, color = "turquoise") +
-  labs(x = "Site",
-       y = "Mean Salinity (ppt)",
-       title = "How Mean Salinity Differs Between Sites")
-
-
-```
-
-### Ridgeline Plot - Salinity Observation Distribution Across NCOS Sites
-```{r}
-#| label: ridgeline
-#| fig-height: 6
-#| fig-width: 8
-
-ggplot(salinity_prcp, aes(x = mean_salinity, y = site_full, fill = site_full)) +
-  geom_density_ridges() +
-  theme_ridges() + 
-  theme(legend.position = "none") +
-  scale_fill_manual(values = natparks.pals("Banff")) +
-  labs(x = "Salinity (ppt)",
-       y = "Site",
-       title= "Salinity Observation Distribution Across NCOS Sites")
- 
-
-```
 
 ## Distribution of Observations
 
@@ -667,19 +787,37 @@ ggplot(salinity_prcp, aes(x = mean_salinity, y = site_full, fill = site_full)) +
 #| fig-height: 6
 #| fig-width: 8
 
+# base layer: ggplot
+# data: water_quality_weather, filtered and releveled inline
 ggplot(data = water_quality_weather |> 
+         # removing outlier IDs, "other" sites, and keeping only
+         #elevation codes 0, 1, and 2
          filter(!global_id %in% salinity_outlier_ids,
                 site_name != "other",
                 elevation_code %in% c("0", "1", "2")) |> 
+         # setting site order from lowest to highest average salinity
          mutate(site_full = fct_relevel(site_full,
-                                        "Phelps Bridge", "East Channel", "Venoco Bridge")),
+                                        "Phelps Bridge", 
+                                        "East Channel", 
+                                        "Venoco Bridge")),
+       # x axis: site name
        mapping = aes(x = site_full)) +
+  # custom fill colors
   scale_fill_manual(values = natparks.pals("Volcanoes")) +
+  # removing the space between data and x axis
+  scale_y_continuous(expand = c(0, 0.1),
+                     # definign limits to include all data
+                     limits = c(0, 700)) +
+  # bar chart with fill colored by site
   geom_bar(aes(fill = site_full)) +
+  # adding theming
   theme_bw() +
+  # removing legend (redundant)
   theme(legend.position = "none") +
+  # labeling x and y axes
   labs(x = "Site",
        y = "Number of Observations",
+       # adding title
        title = "Number of Observations at Each Site")
 
 ```
@@ -690,24 +828,93 @@ ggplot(data = water_quality_weather |>
 #| fig-height: 6
 #| fig-width: 8
 
+# base layer: ggplot
+# data: water_quality_weather, filtered inline
 ggplot(data = water_quality_weather |> 
+         # removing outlier IDs, "other" sites, and keeping only
+         #elevation codes 0, 1, and 2
          filter(!global_id %in% salinity_outlier_ids,
                 site_name != "other",
                 elevation_code %in% c("0", "1", "2")),
+       # x axis: elevation code
        mapping = aes(x = elevation_code)) +
+  # bar chart with fill colored by elevation code
   geom_bar(aes(fill = elevation_code)) +
+  # custom fill colors
   scale_fill_manual(values = natparks.pals("Banff")) +
+  # removing space between data and x axis
+  scale_y_continuous(expand = c(0, 0.1),
+                     # defining vertical limits 
+                     limits = c(0, 650)) +
+  # adding theming
   theme_bw() +
+  # removing legend (redundant)
   theme(legend.position = "none") +
+  # labeling x and y axes
   labs(x = "Elevation Code",
        y = "Number of Observations",
+       # adding title
        title = "Observation Count Across Elevation Codes")
 
 ```
 
+
+
+## Difference in Salinity Between Elevation Codes
+
+### How Salinity Varies Between Elevation Codes
+```{r}
+#| label: viz3
+
+# base layer: ggplot
+# data: `exploratory_salinity`
+ggplot(data = exploratory_salinity,
+       # x: elevation code
+       mapping = aes(x = elevation_code,
+                     # y: mean salinity
+                     y = mean_salinity)) +
+  # data represented by open points
+  geom_point(shape = 21) +
+  # calculating median of data & representing by points
+  stat_summary(fun = median,
+               geom = "point",
+               # custom color
+               color = "maroon") +
+  # calculating median of data, connecting medians per site by a line
+  stat_summary(fun = median,
+               geom = "line",
+               # custom color
+               color = "maroon",
+               # all data into one group to connect across x categories
+               group = 1) +
+  # labeling x and y axes
+  labs(x = "Elevation Code",
+       y = "Mean Salinity (ppt)",
+       # adding in title
+       title = "Mean Salinity Differences Between 
+Elevation Codes") +
+  # each site has own plot
+  facet_wrap(~ site_full) +
+  # adding custom themeing
+  theme_bw() +
+  # defining the discrete elevation codes
+  scale_x_discrete(breaks = c(0,1, 2, 3)) +
+  # Moves the y-axis tick marks and labels to the right
+  # removing space between y axis and data
+  scale_y_continuous(position = "right",
+                     expand = c(0,0.3)) +
+  # Flips the coordinate system
+  coord_flip()
+
+
+```
+
+
+
+
 Both of these figures were added last-minute to the work plan after our data visualization presentation in class. We feel that the addition of this information is important in contextualizing our outputs. Venoco Bridge has the most amount of observations, followed by Phelps Bridge, and finally, East Channel. We can also see that elevation code 1 has the most amount of observations, followed by 0, and finally, 2. Understanding the distribution of observations allows for the appropriate selection of  statistical methods, correct interpretation of analytical results, and effective and accurate communication of findings.
 
-\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+
 
 # 5. Plan for Elective
 

@@ -1,7 +1,0 @@
----
-title: "Group Project Code"
-author: "Madeline, Maisie, Audrey"
-format: pdf
-date: "2026-05-11"
----
-
