@@ -367,6 +367,7 @@ precipitation_peaks_facet <- precipitation_peaks |>
 # Results
 
 ```{r}
+#| label: Figure 1
 #| fig-height: 10
 #| fig-width: 10
 
@@ -477,7 +478,79 @@ prcp_plot / salinity_plot +
                   theme = theme(plot.title = element_text(face = "bold")))
 ```
 
-_Figure 1. On the top, the total monthly precipitation 
+_Figure 1. On the top, the total monthly precipitation is graphed by columns with the top 4 precipitation peaks depicted by colored dotted lines and labels. On the bottom, these precipitation peaks are overlaid onto the monthly average salinity for each of the three sites of intrest (Phelps Bridge, East Channel, and Venoco Bridge)._
+
+
+```{r}
+#| label: Figure 2
+#| fig-height: 6
+#| fig-width: 8
+
+# base layer ggplot
+# data: elevation visualization
+ggplot(data = elv_viz,
+       # x: average elevation
+       mapping = aes(x = avg_elv,
+                     # y: mean salinity
+                     y = mean_salinity)) +
+  # data shown by points
+  geom_point(color = "maroon") +
+  # each site gets own plot
+  facet_wrap(~ site_full) +
+  # custom color palette
+  scale_color_manual(values = wes_palette("GrandBudapest1")) +
+  # adding in themeing
+  theme_bw() +
+  # removing space between data and x-axis
+  scale_y_continuous(expand = c(0,0.3)) +
+  # labeling x and y axes 
+  labs(x = "Monthly Average Water Surface Elevation (m)",
+       y = "Monthly Average Salinity (ppt)",
+       # adding title
+       title = "Figure 2. How Salinity Relates to Water Surface 
+Elevation (Venoco Bridge)") 
+
+
+```
+
+_Figure 2. This figure displays the relationship between monthly average water surface elevation and monthly average salinity as maroon points._
+
+
+```{r}
+#| label: Figure-3
+#| fig-height: 6
+#| fig-width: 8
+
+# base layer: ggplot
+# data: salinity_prcp
+ggplot(data = salinity_prcp,
+       # x axis: monthly average temperature in fahrenheit
+       # y axis: monthly average salinity
+       # color by site
+       mapping = aes(x = mean_temp_f,
+                     y = mean_salinity,
+                     color = site_full)) +
+  # data represented by points
+  geom_point() +
+  # each site gets its own plot
+  facet_wrap(~ site_full) +
+  # custom color palette
+  scale_color_manual(values = wes_palette("Royal2")) +
+  # removing space between data and x axis
+  scale_y_continuous(expand = c(0, 0.2)) +
+  # adding theming
+  theme_bw() +
+  # removing legend (redundant with facet labels)
+  theme(legend.position = "none") +
+  # labeling axes and title
+  labs(x = "Monthly Average Temperature (°F)",
+       y = "Monthly Average Salinity (ppt)",
+       title = "Figure 3. How Temperature Relates to Salinity Across NCOS Sites")
+
+
+```
+
+_Figure 3. This figure displays the relationship between the monthly average temperature in degrees Fahrenheit and monthly average salinity for each of the 3 sites of interest (Phelps Bridge, East Channel, Venoco Bridge)._
 
 
 
