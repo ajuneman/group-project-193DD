@@ -6,11 +6,13 @@ date: "2026-05-27"
 execute: 
   message: false
   warning: false
+bibliography: references.bib
 ---
 
 # 1. Set up
 
 ## Packages
+
 ```{r}
 #| label: packages
 
@@ -48,7 +50,8 @@ library(patchwork)
 
 ```
 
-## Data 
+## Data
+
 ```{r}
 #| label: data
 
@@ -67,6 +70,7 @@ water_parameters <- read_csv(here("data", "YSI_Data_Begin_1.csv"))
 ## Cleaning Code
 
 ### Cleaning Weather
+
 ```{r}
 #| label: cleaning-weather
 
@@ -95,6 +99,7 @@ weather_clean <- weather |>
 ```
 
 ### Cleaning Metadata
+
 ```{r}
 #| label: cleaning-metadata
 
@@ -124,6 +129,7 @@ metadata_clean <- metadata |>
 ```
 
 ### Cleaning Water Parameters
+
 ```{r}
 #| label: cleaning-water-parameters
 
@@ -155,6 +161,7 @@ water_parameters_clean <- water_parameters |>
 ## Joining Code
 
 ### Water Quality = Metadata + Water Parameters
+
 ```{r}
 #| label: creating-water-quality-df
 
@@ -187,6 +194,7 @@ water_quality <- full_join(
 ```
 
 ### Water Quality Weather = Water Quality + Weather
+
 ```{r}
 #| label: join-water-quality-with-weather
 
@@ -203,6 +211,7 @@ water_quality_weather <- left_join(
 ## Wrangling/Summarizing Code
 
 ### Salinity Outliers
+
 ```{r}
 #| label: outlier
 
@@ -215,6 +224,7 @@ salinity_outlier_ids <- water_quality_weather |>
 ```
 
 ### Summarizing Precipitation
+
 ```{r}
 #| label: prcp-monthly
 
@@ -246,6 +256,7 @@ monthly_prcp <- water_quality_weather |>
 ```
 
 ### Filtering and Summarizing Salinity
+
 ```{r}
 #| label: salinity-filtered
 
@@ -288,6 +299,7 @@ salinity_filtered <- water_quality_weather |>
 ```
 
 ### Joining Monthly_prcp and Salinity_filtered
+
 ```{r}
 #| label: joining-prcp
 
@@ -301,6 +313,7 @@ salinity_prcp <- salinity_filtered |>
 ## Exploratory Figure Code
 
 ### Exploring Salinity
+
 ```{r}
 #| label: exploratory-viz
 
@@ -343,6 +356,7 @@ exploratory_salinity <- water_quality_weather |>
 ```
 
 ### Exploring Water Surface Elevation
+
 ```{r}
 #| label: elevation-viz
 
@@ -377,6 +391,7 @@ elv_viz <- monthly_surfcae_elv |>
 ```
 
 ### Creating Precipitation Peaks
+
 ```{r}
 #| label: prcp-peaks
 
@@ -423,21 +438,19 @@ precipitation_peaks_facet <- precipitation_peaks |>
 
 ```
 
-
-
 # 2. Ideas for analysis and background
 
-The overarching question for our project is: How does precipitation explain salinity? 
+The overarching question for our project is: How does precipitation explain salinity?
 
 We expect that more precipitation will generally lead to lower salinity because rainfall adds freshwater and dilutes saltier water. However, salinity is also affected by water depth, evaporation and whether the ecosystem is connected to the ocean.
 
-This is especially relevant as North Campus Open Space is a connected coastal wetland system. Because of this, the salinity is influenced by more than rainfall alone. Harrington and Wood (2014), although focused on an Australian wetland, help support this idea by showing that ocean-driven saltwater movement can also affect salinity. Rainfall can lower salinity by adding freshwater, while sea-level changes and saltwater entering the system can raise salinity again.
+This is especially relevant as North Campus Open Space is a connected coastal wetland system. Because of this, the salinity is influenced by more than rainfall alone.Harrington and Wood, although focused on an Australian wetland, help support this idea by showing that ocean-driven saltwater movement can also affect salinity. Rainfall can lower salinity by adding freshwater, while sea-level changes and saltwater entering the system can raise salinity again @wood2014.
 
 Additionally, between 2015 to 2016 salinity was reported to increase at NCOS during dry periods because evaporation concentrates salts, while rainfall can lower salinity by adding freshwater (Clark, 2016). Rainfall lowered salinity by adding freshwater to the slough, but major storm and breach events reconnected the slough to the ocean, allowing seawater to enter and raise salinity again (Clark, 2016). The report also notes that salinity often increases with depth, so precipitation helps explain salinity but is not the only factor (Clark, 2016).
 
 References:
 
-Clark, R. (2016). Water Quality of North Campus Open Space & Devereux Slough: Fall 2015 - Spring 2016. [online] Available at: https://escholarship.org/uc/item/2923f039 [Accessed 20 May 2026].
+Clark, R. (2016). Water Quality of North Campus Open Space & Devereux Slough: Fall 2015 - Spring 2016. \[online\] Available at: https://escholarship.org/uc/item/2923f039 \[Accessed 20 May 2026\].
 
 Wood, C. and Harrington, G.A. (2014). Influence of Seasonal Variations in Sea Level on the Salinity Regime of a Coastal Groundwater–Fed Wetland. Groundwater, 53(1), pp.90–98. doi:10.1111/gwat.12168.
 
@@ -445,11 +458,9 @@ Ideas for analyses to answer question and some preliminary code to run those ana
 
 To answer our question, “How does precipitation explain salinity?”, we analysed whether monthly precipitation is related to monthly average salinity across NCOS sites. Our draft code already cleans and joins the weather, metadata, and water-quality datasets, then calculates total monthly precipitation and mean monthly salinity by site.
 
-We also chose to use Spearman’s correlation coefficient to test whether salinity tends to decrease as precipitation increases. 
+We also chose to use Spearman’s correlation coefficient to test whether salinity tends to decrease as precipitation increases.
 
-The test gave a coefficient value of 0.0166 and p-value of  0.8251, suggesting that precipitation alone does not strongly explain salinity.
-
-
+The test gave a coefficient value of 0.0166 and p-value of 0.8251, suggesting that precipitation alone does not strongly explain salinity.
 
 # 3. Visualizations directly relevant to answering questions
 
@@ -569,8 +580,8 @@ prcp_plot / salinity_plot
 
 ```
 
-
 ### Figure 2. - How Salinity Relates to Water Surface Elevation (Venoco Bridge)
+
 ```{r}
 #| label: viz2
 #| fig-height: 6
@@ -604,6 +615,7 @@ Elevation (Venoco Bridge)")
 ```
 
 ### Figure 3. - How Temperature Relates to Salinity Across NCOS Sites
+
 ```{r}
 #| fig-height: 6
 #| fig-width: 8
@@ -637,9 +649,8 @@ ggplot(data = salinity_prcp,
 
 ```
 
-
-
 ### Figure 4. - How Precipitation Explains Salinity
+
 ```{r}
 #| label: viz4
 #| fig-height: 6
@@ -679,6 +690,7 @@ ggplot(data = salinity_prcp,
 ## Correlation Test
 
 ### Correlation Test 1: Calculating Spearman's Correlation (salinity/water surface elevation)
+
 ```{r}
 #| label: cor-test-1
 
@@ -694,6 +706,7 @@ cor.test(elv_viz$mean_salinity,
 ```
 
 ### Correlation Test 2: Calculating Spearman's Correlation (salinity/temperature)
+
 ```{r}
 #| label: cor-test-2
 
@@ -707,8 +720,8 @@ cor.test(salinity_prcp$mean_salinity,
 
 ```
 
-
 ### Correlation Test 3: Calculating Spearman's Correlation (salinity/precipitation)
+
 ```{r}
 #| label: cor-test-3
 
@@ -721,30 +734,32 @@ cor.test(salinity_prcp$mean_salinity,
 
 ```
 
-
-
 ### Interpreting the Results
 
 Three Spearman's rank correlation tests were conducted to examine relationships between monthly average salinity and three environmental variables: water surface elevation, temperature, and precipitation. In all three tests, exact p-values could not be computed due to ties in the data, so normal approximations were used; this does not meaningfully affect interpretation.
 
-#### Correlation Test 1. 
+#### Correlation Test 1.
+
 Results indicated no statistically significant relationship between monthly average water surface elevation and salinity (rho = 0.228, S = 30,660, p = 0.075). While the p-value narrowly exceeds the 0.05 threshold, the moderate positive rho suggests a weak tendency for salinity to increase with rising water levels, which may reflect tidal dynamics or saltwater intrusion and warrants further investigation with a larger sample.
 
 #### Correlation Test 2.
+
 Results indicated no statistically significant relationship between monthly average temperature and salinity (rho = 0.032, S = 924,842, p = 0.666). The near-zero rho suggests temperature has negligible direct association with salinity at this scale, though indirect effects through processes such as evaporation may not be captured at this temporal resolution.
 
-#### Correlation Test 3. 
+#### Correlation Test 3.
+
 Results indicated no statistically significant relationship between monthly precipitation and salinity (rho = 0.024, S = 932,653, p = 0.746). The near-zero rho suggests precipitation has negligible association with salinity at this scale, which may reflect lag effects between precipitation events and salinity response, or the influence of other drivers such as tidal exchange operating independently of local precipitation.
 
 #### Overal Interpretation
-Taken together, the results of all three correlation tests suggest that no single environmental variable meaningfully predicts monthly average salinity at NCOS at this scale. This is likely a reflection of the inherent complexity of salinity dynamics in coastal wetland systems, where salinity is shaped by the simultaneous interaction of multiple physical, hydrological, and biological processes. Tidal exchange, freshwater input from precipitation and groundwater, evaporation, seasonal temperature fluctuations, water surface elevation, and site-specific channel geometry all influence salinity in ways that are deeply interconnected and often operate on different timescales.
 
+Taken together, the results of all three correlation tests suggest that no single environmental variable meaningfully predicts monthly average salinity at NCOS at this scale. This is likely a reflection of the inherent complexity of salinity dynamics in coastal wetland systems, where salinity is shaped by the simultaneous interaction of multiple physical, hydrological, and biological processes. Tidal exchange, freshwater input from precipitation and groundwater, evaporation, seasonal temperature fluctuations, water surface elevation, and site-specific channel geometry all influence salinity in ways that are deeply interconnected and often operate on different timescales.
 
 # 4. Other exploratory visualizations
 
 ## Comparing Across Groups
 
 ### Boxplot w/ Jitter - Distribution of Mean Salinity Values Across Sites
+
 ```{r}
 #| label: boxplot
 #| fig-height: 6
@@ -776,12 +791,12 @@ Taken together, the results of all three correlation tests suggest that no singl
 
 ```
 
-- The addition of this plot was taken as a suggestion made by An after reviewing our Work Plan/Project Proposal. This figure aims to demonstrate that not only dooes the elevation code of a site yield a difference in monthly mean salinity (as seen in figure 3), but also that the three NCOS sites also differ in their overall monthly mean salinity values. This plot sets the basic understanding of salinity variety across sites while also adding context to one of the visualizations directly answering our question. 
-
+-   The addition of this plot was taken as a suggestion made by An after reviewing our Work Plan/Project Proposal. This figure aims to demonstrate that not only dooes the elevation code of a site yield a difference in monthly mean salinity (as seen in figure 3), but also that the three NCOS sites also differ in their overall monthly mean salinity values. This plot sets the basic understanding of salinity variety across sites while also adding context to one of the visualizations directly answering our question.
 
 ## Distribution of Observations
 
-### # of Observations per Site
+### \# of Observations per Site
+
 ```{r}
 #| label: observation-per-site
 #| fig-height: 6
@@ -822,7 +837,8 @@ ggplot(data = water_quality_weather |>
 
 ```
 
-### # of Observations per Elevation Code
+### \# of Observations per Elevation Code
+
 ```{r}
 #| label: observation-per-code
 #| fig-height: 6
@@ -858,11 +874,10 @@ ggplot(data = water_quality_weather |>
 
 ```
 
-
-
 ## Difference in Salinity Between Elevation Codes
 
 ### How Salinity Varies Between Elevation Codes
+
 ```{r}
 #| label: viz3
 
@@ -909,13 +924,8 @@ Elevation Codes") +
 
 ```
 
-
-
-
-Both of these figures were added last-minute to the work plan after our data visualization presentation in class. We feel that the addition of this information is important in contextualizing our outputs. Venoco Bridge has the most amount of observations, followed by Phelps Bridge, and finally, East Channel. We can also see that elevation code 1 has the most amount of observations, followed by 0, and finally, 2. Understanding the distribution of observations allows for the appropriate selection of  statistical methods, correct interpretation of analytical results, and effective and accurate communication of findings.
-
-
+Both of these figures were added last-minute to the work plan after our data visualization presentation in class. We feel that the addition of this information is important in contextualizing our outputs. Venoco Bridge has the most amount of observations, followed by Phelps Bridge, and finally, East Channel. We can also see that elevation code 1 has the most amount of observations, followed by 0, and finally, 2. Understanding the distribution of observations allows for the appropriate selection of statistical methods, correct interpretation of analytical results, and effective and accurate communication of findings.
 
 # 5. Plan for Elective
 
-For our elective, we have chosen to create a map of the NCOS area depicting the different keystone species that breed, live, and migrate through these areas. The map will depict water levels from spring of 2023, and be modeled after other NCOS maps online. The map will specifically point to locations such as Phelps Bridge, East Channel, and Venoco Bridge, representing our three main points in our data analysis process. At each site I will choose pictures of different keystone organisms that live in these areas, as well as their preferred salinity conditions according to outside local research. The map will be made of collaged paper materials, and will have additional pictures of the organisms that live and exist there. For each organism, there will be their ideal salinity condition (shown through cups of salt or another visual model) next to the organism, to depict the condiitons they prefer to live in. The description of the image will be one map that is multimedia and will be handmade and depict a map. Over the next two weeks, our group will collect the adequate materials in the next week, print out an example map to add our collage materials over it, look at water levels for the 2023 year and adjust as necessary, and research organisms specific to the NCOS site. Before the end of the week 9 weekend, we will have all materials collected and information logged on a shared google doc so that all parties can contribute and see the research and materials needed. Over the week 9 weekend, group members will select a time to meet up and work artistically on the project, and finishing touches will be made in the remaining time before it is due, including working on a presentation format. 
+For our elective, we have chosen to create a map of the NCOS area depicting the different keystone species that breed, live, and migrate through these areas. The map will depict water levels from spring of 2023, and be modeled after other NCOS maps online. The map will specifically point to locations such as Phelps Bridge, East Channel, and Venoco Bridge, representing our three main points in our data analysis process. At each site I will choose pictures of different keystone organisms that live in these areas, as well as their preferred salinity conditions according to outside local research. The map will be made of collaged paper materials, and will have additional pictures of the organisms that live and exist there. For each organism, there will be their ideal salinity condition (shown through cups of salt or another visual model) next to the organism, to depict the condiitons they prefer to live in. The description of the image will be one map that is multimedia and will be handmade and depict a map. Over the next two weeks, our group will collect the adequate materials in the next week, print out an example map to add our collage materials over it, look at water levels for the 2023 year and adjust as necessary, and research organisms specific to the NCOS site. Before the end of the week 9 weekend, we will have all materials collected and information logged on a shared google doc so that all parties can contribute and see the research and materials needed. Over the week 9 weekend, group members will select a time to meet up and work artistically on the project, and finishing touches will be made in the remaining time before it is due, including working on a presentation format.
