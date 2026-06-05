@@ -22,27 +22,32 @@ library(patchwork)
 
 ## Data and file information
 
+```
 .
 ├── code
 │   ├── drafts for data visualization.qmd
-│   └── drafts-for-data-visualization.pdf
+│   ├── drafts-for-data-visualization.pdf
+│   ├── Final Paper.qmd
+│   ├── Final-Paper.pdf
+│   └── timeline-check-in
+│       ├── references.bib
+│       ├── timeline_check-in_files
+│       │   └── figure-html
+│       │       ├── stack-plot-1.png
+│       │       └── unnamed-chunk-1-1.png
+│       ├── timeline_check-in.pdf
+│       └── timeline_check-in.qmd
 ├── data
 │   ├── NCOS_YSI_Water_Quality_Monitoring_0.csv
 │   ├── NOAA-weather-data.csv
 │   └── YSI_Data_Begin_1.csv
 ├── group-project-193DD.Rproj
 ├── proposal_deleteb4submit.R
-├── README.md
-└── timeline-check-in
-    ├── timeline_check-in_files
-    │   └── figure-html
-    │       ├── stack-plot-1.png
-    │       └── unnamed-chunk-1-1.png
-    ├── timeline_check-in.pdf
-    └── timeline_check-in.qmd
+└── README.md
 
-6 directories, 12 files
+6 directories, 15 files
 
+``` 
 
 ## Rendered Output
 
