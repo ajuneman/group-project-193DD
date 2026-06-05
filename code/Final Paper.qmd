@@ -354,15 +354,9 @@ precipitation_peaks_facet <- precipitation_peaks |>
 
 ```
 
-
-
-
-
 # Introduction
 
-
 # Methods
-
 
 # Results
 
@@ -478,8 +472,7 @@ prcp_plot / salinity_plot +
                   theme = theme(plot.title = element_text(face = "bold")))
 ```
 
-_Figure 1. On the top, the total monthly precipitation is graphed by columns with the top 4 precipitation peaks depicted by colored dotted lines and labels. On the bottom, these precipitation peaks are overlaid onto the monthly average salinity for each of the three sites of intrest (Phelps Bridge, East Channel, and Venoco Bridge)._
-
+*Figure 1. On the top, the total monthly precipitation is graphed by columns with the top 4 precipitation peaks depicted by colored dotted lines and labels. On the bottom, these precipitation peaks are overlaid onto the monthly average salinity for each of the three sites of intrest (Phelps Bridge, East Channel, and Venoco Bridge).*
 
 ```{r}
 #| label: Figure 2
@@ -513,8 +506,7 @@ Elevation (Venoco Bridge)")
 
 ```
 
-_Figure 2. This figure displays the relationship between monthly average water surface elevation and monthly average salinity as maroon points._
-
+*Figure 2. This figure displays the relationship between monthly average water surface elevation and monthly average salinity as maroon points data from*
 
 ```{r}
 #| label: Figure-3
@@ -550,19 +542,8 @@ ggplot(data = salinity_prcp,
 
 ```
 
-_Figure 3. This figure displays the relationship between the monthly average temperature in degrees Fahrenheit and monthly average salinity for each of the 3 sites of interest (Phelps Bridge, East Channel, Venoco Bridge)._
-
-
+*Figure 3. This figure displays the relationship between the monthly average temperature in degrees Fahrenheit and monthly average salinity for each of the 3 sites of interest (Phelps Bridge, East Channel, Venoco Bridge). Data from @rickard2024*
 
 # Discussion
 
-
-# References 
-
-
-
-
-
-
-
-
+# References
