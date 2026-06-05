@@ -29,14 +29,14 @@ library(patchwork)
 │   ├── drafts-for-data-visualization.pdf
 │   ├── Final Paper.qmd
 │   ├── Final-Paper.pdf
+│   ├── references.bib
+│   ├── timeline_check-in_files
+│   │   └── figure-html
+│   │       ├── stack-plot-1.png
+│   │       └── unnamed-chunk-1-1.png
+│   ├── timeline_check-in.pdf
+│   ├── timeline_check-in.qmd
 │   └── timeline-check-in
-│       ├── references.bib
-│       ├── timeline_check-in_files
-│       │   └── figure-html
-│       │       ├── stack-plot-1.png
-│       │       └── unnamed-chunk-1-1.png
-│       ├── timeline_check-in.pdf
-│       └── timeline_check-in.qmd
 ├── data
 │   ├── NCOS_YSI_Water_Quality_Monitoring_0.csv
 │   ├── NOAA-weather-data.csv
