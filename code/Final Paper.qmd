@@ -536,7 +536,7 @@ ggplot(data = salinity_prcp,
   # removing legend (redundant with facet labels)
   theme(legend.position = "none") +
   # labeling axes and title
-  labs(x = "Monthly Average Temperature (°F)",
+  labs(x = "Monthly Average Water Temperature (°F)",
        y = "Monthly Average Salinity (ppt)",
        title = "Figure 3. How Temperature Relates to Salinity Across NCOS Sites")
 
