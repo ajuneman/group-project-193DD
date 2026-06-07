@@ -359,7 +359,11 @@ precipitation_peaks_facet <- precipitation_peaks |>
 
 # Methods
 
+The data used in this analysis were collected through differing methods and by differing parties. Understanding the temporal and spatial coverage of these datasets is important for providing context about the exact location of our information, as well as for the proper summarization of variables in subsequent direct comparison. Measurements of the variables salinity (ppt) and water temperature (℃), as well as conductivity and dissolved oxygen (not used for this analysis) were taken weekly by Cheadle Center student researchers at one foot depth intervals using a portable YSI Pro2030 at the three bridges that cross the upper slough: the Marsh trail bridges over the Phelps Creek outlet and “Dilling’s Link” across the east channel, and the Venoco access road bridge. From the bridges, the sensor is lowered to the water and data is recorded at the surface and at each foot of depth down to the bottom, or at each “elevation code”. Taking observations at each elevation code allows for the aspect of stratification to be taken into consideration. Or, in other words, the variation of these water parameters at different depths are important intricacies to understand when attempting to most accurately display the environmental conditions of this complex waterway. These variables are represented in the water parameters dataset ("YSI_Data_Begin_1.csv") and observations in this dataset span from September 3, 2020 to November 7, 2025 [@rickard2024]. The water surface elevation observations that acted as a secondary exploratory relationship to salinity were recorded at seven locations throughout waterbodies of NCOS. One such location lies within our region of interest and a pressure transducer logger (YSI EXO1) is deployed on the north side of the water under Venoco Bridge. At a deployment elevation of 2.96 ft. NAVD88 (North American Vertical 50 Datum 1988), the levelogger takes water level measurements every 15 minutes. This ever-changing measurement allows researchers to contextualize changes within water composition and or concentration of solutes/particles?, providing for an increase in understanding of this complex system. This variable is represented in the metadata dataset ("NCOS_YSI_Water_Quality_Monitoring_0.csv") and observations in this dataset span from September 3, 2020 to November 7, 2025 [@rickard2024]. Precipitation observations, our main explanatory variable of interest within this analysis, were taken daily from the NOAA Santa Barbara 11 W, CA US station (Station ID: USW00053152) located just west of the Devereaux Lagoon (coordinates: 34°24'50.8"N 119°52'46.6"W). Rainfall information provides our analysis with a necessary external, environmental variable in our attempt to understand the drivers of salinity change. This variable is represented in the weather dataset ("NOAA-weather-data.csv") and observations in this dataset span from September 1, 2020 to November 30, 2025 [@NCEI_SB11W]. To characterize the structure and coverage of the dataset prior to inferential analysis, several descriptive visualizations were produced. Mean salinity values were summarized across the three monitoring sites, Venoco Bridge, East Channel, and Phelps Bridge, using boxplots to illustrate site-level variability of distribution. Observation counts were summarized by site and by elevation code using bar graphs to assess the variable coverage of available data across the sampling framework. Given the potential for non-normality in the salinity, water temperature, water surface elevation, and precipitation data, compounded by generally noted equipment malfunctions throughout the monitoring period [@rickard2024], Spearman's rank correlation tests were selected as the appropriate non-parametric measure of association. Spearman's correlation was applied to evaluate the monotonic relationships between salinity and each of these three environmental variables: water temperature, water surface elevation, and precipitation. A significance threshold of α = 0.05 was applied to all tests.
+
 # Results
+
+## Data Characteization
 
 Observation counts varied across the three monitoring sites, as visualized by Figure 1, with Venoco Bridge contributing the greatest number of records (n \> 600), followed by Phelps Bridge (n \> 375) and East Channel (n \> 300). This imbalance in representation should be considered when interpreting site-level comparisons. Observations were further unevenly distributed across elevation codes, as seen in Figure 2, with codes 0 and 1 accounting for the majority of records and code 2 being notably underrepresented across all sites. This limited representation at deeper elevation codes constrains the reliability of any patterns observed at those levels.
 
@@ -438,7 +442,7 @@ ggplot(data = water_quality_weather |>
 
 ```
 
-Mean salinity differed substantially across the three sites (Figure 3). Venoco Bridge exhibited the highest mean salinity at approximately 25 ppt, followed by East Channel at approximately 19 ppt, and Phelps Bridge at approximately 2.5 ppt. The interquartile ranges at Venoco Bridge and East Channel were comparably sized, indicating similar degrees of variability at those two sites, while Phelps Bridge displayed a notably compressed distribution, suggesting more consistently low and stable salinity conditions. This makes contextual sense as the Phelp’s Bridge site is noted to remain at freshwater levels quite consistently because of a lack of direct tidal influence \[@rickard2024\]. When salinity was examined by elevation code (Figure 4), East Channel and Venoco Bridge appeared to have lower mean salinity at elevation code 2 than at codes 0 and 1. While higher salinity at lower elevation codes might be expected given that denser saline water tends to underlie fresher water in coastal systems through saltwater intrusion dynamics @mazhar2022, the observed inverse pattern at East Channel and Venoco Bridge is likely an artifact of the limited number of observations at elevation code 2 rather than a true reflection of salinity conditions at that elevation.
+Mean salinity differed substantially across the three sites (Figure 3). Venoco Bridge exhibited the highest mean salinity at approximately 25 ppt, followed by East Channel at approximately 19 ppt, and Phelps Bridge at approximately 2.5 ppt. The interquartile ranges at Venoco Bridge and East Channel were comparably sized, indicating similar degrees of variability at those two sites, while Phelps Bridge displayed a notably compressed distribution, suggesting more consistently low and stable salinity conditions. This makes contextual sense as the Phelp’s Bridge site is noted to remain at freshwater levels quite consistently because of a lack of direct tidal influence [@rickard2024].
 
 ```{r}
 #| label: salinity-boxplot
@@ -470,6 +474,8 @@ Mean salinity differed substantially across the three sites (Figure 3). Venoco B
 
 
 ```
+
+When salinity was examined by elevation code (Figure 4), East Channel and Venoco Bridge appeared to have lower mean salinity at elevation code 2 than at codes 0 and 1. While higher salinity at lower elevation codes might be expected given that denser saline water tends to underlie fresher water in coastal systems through saltwater intrusion dynamics [@mazhar2022], the observed inverse pattern at East Channel and Venoco Bridge is likely an artifact of the limited number of observations at elevation code 2 rather than a true reflection of salinity conditions at that elevation.
 
 ```{r}
 #| label: salinity-by-code
@@ -518,6 +524,8 @@ Elevation Codes") +
 
 
 ```
+
+## Precipitation and Salinity Relationship
 
 ```{r}
 #| label: prcp
@@ -633,6 +641,8 @@ prcp_plot / salinity_plot +
 
 *Figure 5. On the top, the total monthly precipitation is graphed by columns with the top 4 precipitation peaks depicted by colored dotted lines and labels. On the bottom, these precipitation peaks are overlaid onto the monthly average salinity for each of the three sites of intrest (Phelps Bridge, East Channel, and Venoco Bridge). Data from @rickard2024.*
 
+Monthly total precipitation across the study period was dominated by four notable peaks occurring in January 2021, October 2021, February 2023, and March 2023, with comparatively low rainfall recorded throughout the remainder of the record (Figure 5). When these precipitation peaks were overlaid onto monthly average salinity at each site (Figure 5), no consistent or widespread salinity response was apparent across all three sites. Isolated instances of elevated salinity coinciding with precipitation peaks were observed at East Channel and Venoco Bridge, though these patterns were not consistent enough to suggest a direct or reliable relationship as peak salinity periods were not always accompanied by a precipitation peak event. Phelps Bridge showed little discernible response to precipitation events likely because of the low recorded salinity at this particular site, making patterns difficult to observe. The relationship's scatterplot (Figure 6) displays a seemingly lacking correlation between these two variables with a heavy majority of points congregating in the low precipitation, low salinity corner (Phelps Bridge) and by the vertical pattern of points displaying that low precipitation levels can and do give rise to a large range in monthly average salinity values.
+
 ```{r}
 #| label: salinity-prcp
 #| fig-height: 6
@@ -671,6 +681,12 @@ ggplot(data = salinity_prcp,
 
 *Figure 6. This figure displays the relationship between the monthly total precipitation in inches and the monthly average salinity in ppt. The figure is divided and colored by observations from each of the three sites of interest (Phelps Bridge, East Channel, and Venoco Bridge). Data from @rickard2024.*
 
+The results of the Spearman's rank correlation test support this same observation, indicating no statistically significant relationship between monthly total precipitation and monthly average salinity (rho = 0.024, S = 932,653, p = 0.746) (Figure 4). The near-zero rho suggests negligible association between these variables at the monthly timescale, which may reflect lag effects between precipitation events and salinity response, or the dominant influence of other drivers such as tidal exchange operating independently of local precipitation inputs. The high p-value (p = 0.746) indicates that the observed correlation was well within the range of what would be expected by chance alone if no true relationship existed, providing no statistical evidence of an association between monthly precipitation and monthly mean salinity at this scale.
+
+## Water Surface Elevation and Salinity Relationship
+
+Figure 7 displays the relationship between monthly average water surface elevation and monthly average salinity. While no strong or obvious linear relationship is apparent, the cluster of points exhibits a subtle positive tendency, where lower monthly average water surface elevation corresponds generally to lower monthly average salinity, and higher water surface elevations are associated with somewhat higher salinity values.
+
 ```{r}
 #| label: water-surface-elevation-salinity
 #| fig-height: 6
@@ -704,6 +720,12 @@ Elevation (Venoco Bridge)")
 ```
 
 *Figure 7. This figure displays the relationship between monthly average water surface elevation and monthly average salinity as maroon points. Data from @rickard2024.*
+
+No statistically significant relationship was identified between monthly average water surface elevation and monthly average salinity (rho = 0.228, S = 30,660, p = 0.075) (Figure 2). The p-value of 0.075 indicates that, assuming no true relationship existed, there would be a 7.5% probability of observing a correlation as strong as or stronger than the one obtained. While this narrowly exceeds the significance threshold of α = 0.05, it suggests the result is not easily dismissed and may reflect a weak but potentially meaningful positive correlation between water surface elevation and salinity that warrants further investigation with a larger sample. This pattern may reflect tidal dynamics or episodic saltwater intrusion events, whereby higher water levels correspond to greater marine influence within the system, rather than the effect of increased precipitation events.
+
+## Temperature and Salinity Relationship
+
+Figure 8 displays the relationship between monthly average water temperature and monthly average salinity across the three monitoring sites. At Phelps Bridge, the majority of points are tightly clustered at low salinity values (below 5 ppt) across the full range of observed temperatures, with only a small number of higher salinity observations scattered across the temperature range, suggesting no directional relationship between the two variables at this site. At East Channel and Venoco Bridge, salinity values are more widely distributed across the y-axis but similarly show no consistent directional pattern with increasing temperature, high and low salinity values appear across the full range of observed temperatures at both sites.
 
 ```{r}
 #| label: temp-salinity
@@ -740,6 +762,8 @@ ggplot(data = salinity_prcp,
 ```
 
 *Figure 8. This figure displays the relationship between the monthly average temperature in degrees Fahrenheit and monthly average salinity for each of the three sites of interest (Phelps Bridge, East Channel, Venoco Bridge). Data from @rickard2024.*
+
+The Spearman's correlation test confirmed no statistically significant relationship between monthly average temperature and salinity (rho = 0.032, p = 0.666). The p-value of 0.666 indicates that the observed correlation was well within the range of what would be expected by chance alone if no true relationship existed, providing no statistical evidence of a meaningful association between these variables at the monthly temporal scale. The near-zero rho further reinforces the negligible nature of this association, though indirect effects of temperature on salinity mediated through processes such as evaporation may not be adequately captured at this resolution.
 
 # Discussion
 
