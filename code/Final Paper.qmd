@@ -363,7 +363,162 @@ precipitation_peaks_facet <- precipitation_peaks |>
 # Results
 
 ```{r}
-#| label: Figure 1
+#| label: Fig-1-observation-per-site
+#| fig-height: 6
+#| fig-width: 8
+
+# base layer: ggplot
+# data: water_quality_weather, filtered and releveled inline
+ggplot(data = water_quality_weather |> 
+         # removing outlier IDs, "other" sites, and keeping only
+         #elevation codes 0, 1, and 2
+         filter(!global_id %in% salinity_outlier_ids,
+                site_name != "other",
+                elevation_code %in% c("0", "1", "2")) |> 
+         # setting site order from lowest to highest average salinity
+         mutate(site_full = fct_relevel(site_full,
+                                        "Phelps Bridge", 
+                                        "East Channel", 
+                                        "Venoco Bridge")),
+       # x axis: site name
+       mapping = aes(x = site_full)) +
+  # custom fill colors
+  scale_fill_manual(values = natparks.pals("Volcanoes")) +
+  # removing the space between data and x axis
+  scale_y_continuous(expand = c(0, 0.1),
+                     # definign limits to include all data
+                     limits = c(0, 700)) +
+  # bar chart with fill colored by site
+  geom_bar(aes(fill = site_full)) +
+  # adding theming
+  theme_bw() +
+  # removing legend (redundant)
+  theme(legend.position = "none") +
+  # labeling x and y axes
+  labs(x = "Site",
+       y = "Number of Observations",
+       # adding title
+       title = "Figure 1. Number of Observations at Each Site")
+
+```
+
+
+```{r}
+#| label: fig-2-observation-per-code
+#| fig-height: 6
+#| fig-width: 8
+
+# base layer: ggplot
+# data: water_quality_weather, filtered inline
+ggplot(data = water_quality_weather |> 
+         # removing outlier IDs, "other" sites, and keeping only
+         #elevation codes 0, 1, and 2
+         filter(!global_id %in% salinity_outlier_ids,
+                site_name != "other",
+                elevation_code %in% c("0", "1", "2")),
+       # x axis: elevation code
+       mapping = aes(x = elevation_code)) +
+  # bar chart with fill colored by elevation code
+  geom_bar(aes(fill = elevation_code)) +
+  # custom fill colors
+  scale_fill_manual(values = natparks.pals("Banff")) +
+  # removing space between data and x axis
+  scale_y_continuous(expand = c(0, 0.1),
+                     # defining vertical limits 
+                     limits = c(0, 650)) +
+  # adding theming
+  theme_bw() +
+  # removing legend (redundant)
+  theme(legend.position = "none") +
+  # labeling x and y axes
+  labs(x = "Elevation Code",
+       y = "Number of Observations",
+       # adding title
+       title = "Figure 2. Observation Count Across Elevation Codes")
+
+```
+
+```{r}
+#| label: fig-3-boxplot
+#| fig-height: 6
+#| fig-width: 8
+
+  # base layer: ggplot
+  # data: salinity~prcp
+  ggplot(data = salinity_prcp,
+         # x: site name, y: mean salinity, coloring in by site
+         aes(x= site_full, y=mean_salinity, fill = site_full)) +
+  # boxplot to display data  
+  geom_boxplot(color = "black") +
+  # adding jitter to points for better visualization
+  geom_jitter(color="black", size=0.4, alpha=0.9, height = 0) +
+  # custom coloring and a 0.6 transparency to visualize data points
+  scale_fill_manual(values = alpha(wes_palette("GrandBudapest1"), 0.6)) +
+  # removing space between data and x axis
+  scale_y_continuous(expand = c(0, 0.1)) +
+  # adding in a theme
+  theme_bw() +
+  # taking out legend
+  theme(legend.position="none") +
+  # labeling x and y axes
+  labs(x = "Site",
+       y = "Mean Salinity (ppt)",
+       # adding in a title
+       title = "Figure 3. Distribution of Mean Salinity Values Across Sites")
+
+
+```
+
+```{r}
+#| label: fig-4
+
+# base layer: ggplot
+# data: `exploratory_salinity`
+ggplot(data = exploratory_salinity,
+       # x: elevation code
+       mapping = aes(x = elevation_code,
+                     # y: mean salinity
+                     y = mean_salinity)) +
+  # data represented by open points
+  geom_point(shape = 21) +
+  # calculating median of data & representing by points
+  stat_summary(fun = median,
+               geom = "point",
+               # custom color
+               color = "maroon") +
+  # calculating median of data, connecting medians per site by a line
+  stat_summary(fun = median,
+               geom = "line",
+               # custom color
+               color = "maroon",
+               # all data into one group to connect across x categories
+               group = 1) +
+  # labeling x and y axes
+  labs(x = "Elevation Code",
+       y = "Mean Salinity (ppt)",
+       # adding in title
+       title = "Figure 4. Mean Salinity Differences Between 
+Elevation Codes") +
+  # each site has own plot
+  facet_wrap(~ site_full) +
+  # adding custom themeing
+  theme_bw() +
+  # defining the discrete elevation codes
+  scale_x_discrete(breaks = c(0,1, 2, 3)) +
+  # Moves the y-axis tick marks and labels to the right
+  # removing space between y axis and data
+  scale_y_continuous(position = "right",
+                     expand = c(0,0.3)) +
+  # Flips the coordinate system
+  coord_flip()
+
+
+```
+
+
+
+```{r}
+#| label: Figure-5
 #| fig-height: 10
 #| fig-width: 10
 
@@ -470,84 +625,15 @@ salinity_plot <- ggplot(data = salinity_prcp,
 
 # Stacking plots
 prcp_plot / salinity_plot +
-  plot_annotation(title = "Figure 1. Precipitation Peaks at NCOS Overlaid on Monthly Average Salinity",
+  plot_annotation(title = "Figure 5. Precipitation Peaks at NCOS Overlaid on Monthly Average Salinity",
                   theme = theme(plot.title = element_text(face = "bold")))
 ```
 
-*Figure 1. On the top, the total monthly precipitation is graphed by columns with the top 4 precipitation peaks depicted by colored dotted lines and labels. On the bottom, these precipitation peaks are overlaid onto the monthly average salinity for each of the three sites of intrest (Phelps Bridge, East Channel, and Venoco Bridge). Data from @rickard2024.*
+*Figure 5. On the top, the total monthly precipitation is graphed by columns with the top 4 precipitation peaks depicted by colored dotted lines and labels. On the bottom, these precipitation peaks are overlaid onto the monthly average salinity for each of the three sites of intrest (Phelps Bridge, East Channel, and Venoco Bridge). Data from @rickard2024.*
+
 
 ```{r}
-#| label: Figure 2
-#| fig-height: 6
-#| fig-width: 8
-
-# base layer ggplot
-# data: elevation visualization
-ggplot(data = elv_viz,
-       # x: average elevation
-       mapping = aes(x = avg_elv,
-                     # y: mean salinity
-                     y = mean_salinity)) +
-  # data shown by points
-  geom_point(color = "maroon") +
-  # each site gets own plot
-  facet_wrap(~ site_full) +
-  # custom color palette
-  scale_color_manual(values = wes_palette("GrandBudapest1")) +
-  # adding in themeing
-  theme_bw() +
-  # removing space between data and x-axis
-  scale_y_continuous(expand = c(0,0.3)) +
-  # labeling x and y axes 
-  labs(x = "Monthly Average Water Surface Elevation (m)",
-       y = "Monthly Average Salinity (ppt)",
-       # adding title
-       title = "Figure 2. How Salinity Relates to Water Surface 
-Elevation (Venoco Bridge)") 
-
-
-```
-
-*Figure 2. This figure displays the relationship between monthly average water surface elevation and monthly average salinity as maroon points. Data from @rickard2024.*
-
-```{r}
-#| label: Figure-3
-#| fig-height: 6
-#| fig-width: 8
-
-# base layer: ggplot
-# data: salinity_prcp
-ggplot(data = salinity_prcp,
-       # x axis: monthly average temperature in fahrenheit
-       # y axis: monthly average salinity
-       # color by site
-       mapping = aes(x = mean_temp_f,
-                     y = mean_salinity,
-                     color = site_full)) +
-  # data represented by points
-  geom_point() +
-  # each site gets its own plot
-  facet_wrap(~ site_full) +
-  # custom color palette
-  scale_color_manual(values = wes_palette("Royal2")) +
-  # removing space between data and x axis
-  scale_y_continuous(expand = c(0, 0.2)) +
-  # adding theming
-  theme_bw() +
-  # removing legend (redundant with facet labels)
-  theme(legend.position = "none") +
-  # labeling axes and title
-  labs(x = "Monthly Average Water Temperature (°F)",
-       y = "Monthly Average Salinity (ppt)",
-       title = "Figure 3. How Temperature Relates to Salinity Across NCOS Sites")
-
-
-```
-
-*Figure 3. This figure displays the relationship between the monthly average temperature in degrees Fahrenheit and monthly average salinity for each of the three sites of interest (Phelps Bridge, East Channel, Venoco Bridge). Data from @rickard2024.*
-
-```{r}
-#| label: figure-4
+#| label: figure-6
 #| fig-height: 6
 #| fig-width: 8
 
@@ -578,11 +664,82 @@ ggplot(data = salinity_prcp,
   labs(x = "Monthly Precipitation (in)",
        y = "Monthly Average Salinity (ppt)",
        # adding figure title
-       title = "Figure 4. How Precipitation Relates to Salinity Across NCOS Sites")
+       title = "Figure 6. How Precipitation Relates to Salinity Across NCOS Sites")
+
+```
+*Figure 6. This figure displays the relationship between the monthly total precipitation in inches and the monthly average salinity in ppt. The figure is divided and colored by observations from each of the three sites of interest (Phelps Bridge, East Channel, and Venoco Bridge). Data from @rickard2024.*
+
+```{r}
+#| label: Figure-7
+#| fig-height: 6
+#| fig-width: 8
+
+# base layer ggplot
+# data: elevation visualization
+ggplot(data = elv_viz,
+       # x: average elevation
+       mapping = aes(x = avg_elv,
+                     # y: mean salinity
+                     y = mean_salinity)) +
+  # data shown by points
+  geom_point(color = "maroon") +
+  # each site gets own plot
+  facet_wrap(~ site_full) +
+  # custom color palette
+  scale_color_manual(values = wes_palette("GrandBudapest1")) +
+  # adding in themeing
+  theme_bw() +
+  # removing space between data and x-axis
+  scale_y_continuous(expand = c(0,0.3)) +
+  # labeling x and y axes 
+  labs(x = "Monthly Average Water Surface Elevation (m)",
+       y = "Monthly Average Salinity (ppt)",
+       # adding title
+       title = "Figure 7. How Salinity Relates to Water Surface 
+Elevation (Venoco Bridge)") 
+
 
 ```
 
-*Figure 4. This figure displays the relationship between the monthly total precipitation in inches and the monthly average salinity in ppt. The figure is divided and colored by observations from each of the three sites of interest (Phelps Bridge, East Channel, and Venoco Bridge). Data from @rickard2024.*
+*Figure 7. This figure displays the relationship between monthly average water surface elevation and monthly average salinity as maroon points. Data from @rickard2024.*
+
+```{r}
+#| label: Figure-8
+#| fig-height: 6
+#| fig-width: 8
+
+# base layer: ggplot
+# data: salinity_prcp
+ggplot(data = salinity_prcp,
+       # x axis: monthly average temperature in fahrenheit
+       # y axis: monthly average salinity
+       # color by site
+       mapping = aes(x = mean_temp_f,
+                     y = mean_salinity,
+                     color = site_full)) +
+  # data represented by points
+  geom_point() +
+  # each site gets its own plot
+  facet_wrap(~ site_full) +
+  # custom color palette
+  scale_color_manual(values = wes_palette("Royal2")) +
+  # removing space between data and x axis
+  scale_y_continuous(expand = c(0, 0.2)) +
+  # adding theming
+  theme_bw() +
+  # removing legend (redundant with facet labels)
+  theme(legend.position = "none") +
+  # labeling axes and title
+  labs(x = "Monthly Average Water Temperature (°F)",
+       y = "Monthly Average Salinity (ppt)",
+       title = "Figure 8. How Temperature Relates to Salinity Across NCOS Sites")
+
+
+```
+
+*Figure 8. This figure displays the relationship between the monthly average temperature in degrees Fahrenheit and monthly average salinity for each of the three sites of interest (Phelps Bridge, East Channel, Venoco Bridge). Data from @rickard2024.*
+
+
 
 # Discussion
 
