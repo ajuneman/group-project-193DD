@@ -62,7 +62,6 @@ water_parameters <- read_csv(here("data", "YSI_Data_Begin_1.csv"))
 
 ```
 
-
 ```{r}
 #| label: all-figure-code
 
@@ -362,8 +361,10 @@ precipitation_peaks_facet <- precipitation_peaks |>
 
 # Results
 
+Observation counts varied across the three monitoring sites, as visualized by Figure 1, with Venoco Bridge contributing the greatest number of records (n \> 600), followed by Phelps Bridge (n \> 375) and East Channel (n \> 300). This imbalance in representation should be considered when interpreting site-level comparisons. Observations were further unevenly distributed across elevation codes, as seen in Figure 2, with codes 0 and 1 accounting for the majority of records and code 2 being notably underrepresented across all sites. This limited representation at deeper elevation codes constrains the reliability of any patterns observed at those levels.
+
 ```{r}
-#| label: Fig-1-observation-per-site
+#| label: observation-per-site
 #| fig-height: 6
 #| fig-width: 8
 
@@ -402,9 +403,8 @@ ggplot(data = water_quality_weather |>
 
 ```
 
-
 ```{r}
-#| label: fig-2-observation-per-code
+#| label: observation-per-code
 #| fig-height: 6
 #| fig-width: 8
 
@@ -438,8 +438,10 @@ ggplot(data = water_quality_weather |>
 
 ```
 
+Mean salinity differed substantially across the three sites (Figure 3). Venoco Bridge exhibited the highest mean salinity at approximately 25 ppt, followed by East Channel at approximately 19 ppt, and Phelps Bridge at approximately 2.5 ppt. The interquartile ranges at Venoco Bridge and East Channel were comparably sized, indicating similar degrees of variability at those two sites, while Phelps Bridge displayed a notably compressed distribution, suggesting more consistently low and stable salinity conditions. This makes contextual sense as the Phelp’s Bridge site is noted to remain at freshwater levels quite consistently because of a lack of direct tidal influence \[@rickard2024\]. When salinity was examined by elevation code (Figure 4), East Channel and Venoco Bridge appeared to have lower mean salinity at elevation code 2 than at codes 0 and 1. While higher salinity at lower elevation codes might be expected given that denser saline water tends to underlie fresher water in coastal systems through saltwater intrusion dynamics @mazhar2022, the observed inverse pattern at East Channel and Venoco Bridge is likely an artifact of the limited number of observations at elevation code 2 rather than a true reflection of salinity conditions at that elevation.
+
 ```{r}
-#| label: fig-3-boxplot
+#| label: salinity-boxplot
 #| fig-height: 6
 #| fig-width: 8
 
@@ -470,7 +472,9 @@ ggplot(data = water_quality_weather |>
 ```
 
 ```{r}
-#| label: fig-4
+#| label: salinity-by-code
+#| fig-height: 6
+#| fig-width: 8
 
 # base layer: ggplot
 # data: `exploratory_salinity`
@@ -515,10 +519,8 @@ Elevation Codes") +
 
 ```
 
-
-
 ```{r}
-#| label: Figure-5
+#| label: prcp
 #| fig-height: 10
 #| fig-width: 10
 
@@ -631,9 +633,8 @@ prcp_plot / salinity_plot +
 
 *Figure 5. On the top, the total monthly precipitation is graphed by columns with the top 4 precipitation peaks depicted by colored dotted lines and labels. On the bottom, these precipitation peaks are overlaid onto the monthly average salinity for each of the three sites of intrest (Phelps Bridge, East Channel, and Venoco Bridge). Data from @rickard2024.*
 
-
 ```{r}
-#| label: figure-6
+#| label: salinity-prcp
 #| fig-height: 6
 #| fig-width: 8
 
@@ -667,10 +668,11 @@ ggplot(data = salinity_prcp,
        title = "Figure 6. How Precipitation Relates to Salinity Across NCOS Sites")
 
 ```
+
 *Figure 6. This figure displays the relationship between the monthly total precipitation in inches and the monthly average salinity in ppt. The figure is divided and colored by observations from each of the three sites of interest (Phelps Bridge, East Channel, and Venoco Bridge). Data from @rickard2024.*
 
 ```{r}
-#| label: Figure-7
+#| label: water-surface-elevation-salinity
 #| fig-height: 6
 #| fig-width: 8
 
@@ -704,7 +706,7 @@ Elevation (Venoco Bridge)")
 *Figure 7. This figure displays the relationship between monthly average water surface elevation and monthly average salinity as maroon points. Data from @rickard2024.*
 
 ```{r}
-#| label: Figure-8
+#| label: temp-salinity
 #| fig-height: 6
 #| fig-width: 8
 
@@ -738,8 +740,6 @@ ggplot(data = salinity_prcp,
 ```
 
 *Figure 8. This figure displays the relationship between the monthly average temperature in degrees Fahrenheit and monthly average salinity for each of the three sites of interest (Phelps Bridge, East Channel, Venoco Bridge). Data from @rickard2024.*
-
-
 
 # Discussion
 
