@@ -60,7 +60,7 @@ The rendered output for the Final paper pdf is: [here]()
 
 ## Related Repositories
 
-The rendered output for the Project Proposal is: [here]()
+The Project Proposal README is: [here](https://ajuneman.github.io/project-proposal/)
 
 The rendered output for the literature dissection is: [here](https://madelineh7289-a11y.github.io/Literature-Dissection/documents/template.pdf)
 
