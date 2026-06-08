@@ -62,7 +62,7 @@ The rendered output for the Final paper pdf is: [here]()
 
 The rendered output for the Project Proposal is: [here]()
 
-The rendered output for the literature dissection is: [here]()
+The rendered output for the literature dissection is: [here](https://madelineh7289-a11y.github.io/Literature-Dissection/documents/template.pdf)
 
 
 
