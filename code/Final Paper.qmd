@@ -1,10 +1,10 @@
 ---
-title: "Timeline Check-in"
+title: "Final Paper"
 author: "Madeline, Audrey, Maisie"
 format: pdf
 echo: false
 toc: true
-date: "2026-05-22"
+date: "2026-06-10"
 execute: 
   message: false
   warning: false
