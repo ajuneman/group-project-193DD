@@ -407,6 +407,8 @@ ggplot(data = water_quality_weather |>
 
 ```
 
+*Figure 1. The number of observations taken at each of the three sites (Phelps Bridge, East Channel, and Venoco Bridge) is displayed as a bar graph. Data from @rickard2024.*
+
 ```{r}
 #| label: observation-per-code
 #| fig-height: 6
@@ -442,6 +444,8 @@ ggplot(data = water_quality_weather |>
 
 ```
 
+*Figure 2. The number of observations taken at each elevation code (0, 1, and 2) during the study period is displayed as a bar graph. Data from @rickard2024.*
+
 Mean salinity differed substantially across the three sites (Figure 3). Venoco Bridge exhibited the highest mean salinity at approximately 25 ppt, followed by East Channel at approximately 19 ppt, and Phelps Bridge at approximately 2.5 ppt. The interquartile ranges at Venoco Bridge and East Channel were comparably sized, indicating similar degrees of variability at those two sites, while Phelps Bridge displayed a notably compressed distribution, suggesting more consistently low and stable salinity conditions. This makes contextual sense as the Phelp’s Bridge site is noted to remain at freshwater levels quite consistently because of a lack of direct tidal influence [@rickard2024].
 
 ```{r}
@@ -474,6 +478,8 @@ Mean salinity differed substantially across the three sites (Figure 3). Venoco B
 
 
 ```
+
+*Figure 3. Mean salinity values across the study period are displayed usign boxplots for each of the three sites (Phelps Bridge, East Channel, and Venoco Bridge). Data from @rickard2024.*
 
 When salinity was examined by elevation code (Figure 4), East Channel and Venoco Bridge appeared to have lower mean salinity at elevation code 2 than at codes 0 and 1. While higher salinity at lower elevation codes might be expected given that denser saline water tends to underlie fresher water in coastal systems through saltwater intrusion dynamics [@mazhar2022], the observed inverse pattern at East Channel and Venoco Bridge is likely an artifact of the limited number of observations at elevation code 2 rather than a true reflection of salinity conditions at that elevation.
 
@@ -524,6 +530,8 @@ Elevation Codes") +
 
 
 ```
+
+*Figure 4. The mean salinity values for different elevation codes (0, 1, 2, and 3) are displayed for each of the three sites (Phelps Bridge, East Channel, and Venoco Bridge) across the study period. Data from @rickard2024.*
 
 ## Precipitation and Salinity Relationship
 
