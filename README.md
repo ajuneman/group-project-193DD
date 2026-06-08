@@ -2,7 +2,7 @@
 
 ## General information
 
-This repository contains data and code to explore the question of "How does precipitation explain salinity?" at North Campus Open Space. 
+This repository contains data and code to explore the main question of "How does precipitation explain salinity?" at North Campus Open Space, with two supplamental questions of "How does water surface elevation explain salinity?" and "How does temperature explain salinity?".  
 
 To work with the code in this repository, you will need the following packages:
 
