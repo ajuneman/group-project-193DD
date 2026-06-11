@@ -54,7 +54,6 @@ library(patchwork)
 The rendered output for the revised Week 8 Timeline Check-in in this repository is: [here](https://github.com/ajuneman/group-project-193DD/blob/main/code/timeline_check-in.pdf).
 
 
-
 The rendered output for the Final paper pdf is: [here](https://docs.google.com/viewer?url=https://raw.githubusercontent.com/ajuneman/group-project-193DD/main/code/Final-Paper.pdf)
 
 
