@@ -55,7 +55,7 @@ The rendered output for the revised Week 8 Timeline Check-in in this repository 
 
 
 
-The rendered output for the Final paper pdf is: [here](https://docs.google.com/viewer?url=https://raw.githubusercontent.com/ajuneman/group-project-193DD/main/code/Final-Paper.pdf)
+The rendered output for the Final paper pdf is: [here](https://docs.google.com/viewer?url=https://raw.githubusercontent.com/ajuneman/group-project-193DD/main/code/final_paper.pdf)
 
 
 
