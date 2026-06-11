@@ -27,8 +27,8 @@ library(patchwork)
 ├── code
 │   ├── drafts for data visualization.qmd
 │   ├── drafts-for-data-visualization.pdf
-│   ├── Final Paper.qmd
-│   ├── Final-Paper.pdf
+│   ├── final_paper.pdf
+│   ├── final_paper.qmd
 │   ├── references.bib
 │   ├── timeline_check-in_files
 │   │   └── figure-html
@@ -54,12 +54,9 @@ library(patchwork)
 The rendered output for the revised Week 8 Timeline Check-in in this repository is: [here](https://github.com/ajuneman/group-project-193DD/blob/main/code/timeline_check-in.pdf).
 
 
-<<<<<<< HEAD
-The rendered output for the Final paper pdf is: [here](https://docs.google.com/viewer?url=https://raw.githubusercontent.com/ajuneman/group-project-193DD/main/code/Final-Paper.pdf)
-=======
 
-The rendered output for the Final paper pdf is: [here](https://github.com/ajuneman/group-project-193DD/blob/c277f4e666ffb213eda1fbc1f17cc24c7b027549/code/Final-Paper.pdf)
->>>>>>> 97b8c1a82952947a5da20b8bd789c12f6f28bd8a
+The rendered output for the Final paper pdf is: [here](https://docs.google.com/viewer?url=https://raw.githubusercontent.com/ajuneman/group-project-193DD/main/code/Final-Paper.pdf)
+
 
 
 ## Related Repositories
